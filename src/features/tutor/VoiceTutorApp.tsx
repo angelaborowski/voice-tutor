@@ -1,14 +1,38 @@
 import { ConversationProvider } from "@elevenlabs/react";
-import { Mic, Moon, Sun, XIcon } from "lucide-react";
+import { Mic, XIcon } from "lucide-react";
+import { useEffect, useMemo, useState, type CSSProperties } from "react";
 
 import { GlassEffect } from "@/components/ui/glass-effect";
-import { ShimmeringText } from "@/components/ui/shimmering-text";
 import { AppSidebar } from "@/features/tutor/components/AppSidebar";
 import { ChatThread } from "@/features/tutor/components/ChatThread";
 import { StudyPackDrawer } from "@/features/tutor/components/StudyPackDrawer";
 import { TutorPicker } from "@/features/tutor/components/TutorPicker";
-import { personalityColors } from "@/features/tutor/domain/settings";
+import { personalityColors, personalityLabels } from "@/features/tutor/domain/settings";
 import { useTutorWorkspace } from "@/features/tutor/hooks/useTutorWorkspace";
+
+const composerPromptSuggestions = [
+  "How can I help you today?",
+  "What can I help you with?",
+  "Fancy a quick lesson?",
+  "Want to practise something?",
+  "Tell me what you're stuck on.",
+  "What are we learning?",
+  "Bring me a topic.",
+  "Want a tiny explainer?",
+  "Need help with homework?",
+  "Let's untangle something.",
+  "Ask me the messy bit.",
+  "What should we crack?",
+  "Want a worked example?",
+  "Drop in a question.",
+  "Need a quick recap?",
+  "Let's make it click.",
+  "What feels confusing?",
+  "Ready for a mini lesson?",
+  "Want to test yourself?",
+  "What should we practise?",
+];
+const composerPromptRotationMs = 6200;
 
 export function VoiceTutorApp() {
   return (
@@ -31,7 +55,6 @@ function TutorWorkspace() {
     handleNewChat,
     handleOpenStudyPack,
     handleSelectSession,
-    handleThemeToggle,
     handleTextSubmit,
     handleToggleCollapse,
     handleVoiceToggle,
@@ -67,8 +90,41 @@ function TutorWorkspace() {
     conversation.status === "connecting" ||
     conversation.status === "connected";
   const shouldShowComposerPrompt = !textDraft && !hasStartedConversation;
-  const composerPlaceholderColor = studioTheme === "light" ? "rgba(23, 18, 17, 0.46)" : "rgba(247, 247, 244, 0.42)";
-  const composerPlaceholderShimmer = studioTheme === "light" ? "#171211" : "#f7f7f4";
+  const [isComposerFocused, setIsComposerFocused] = useState(false);
+  const [promptSuggestionIndex, setPromptSuggestionIndex] = useState(0);
+  const [promptRevealCycle, setPromptRevealCycle] = useState(0);
+  const activePromptSuggestion =
+    composerPromptSuggestions[promptSuggestionIndex] ?? composerPromptSuggestions[0];
+  const shouldAnimateComposerPrompt = shouldShowComposerPrompt && !isComposerFocused;
+  const staggerPromptCharacters = useMemo(
+    () =>
+      [...activePromptSuggestion].map((char, index) => ({
+        char,
+        delay: `${index * 11}ms`,
+        isSpace: char === " ",
+      })),
+    [activePromptSuggestion],
+  );
+
+  useEffect(() => {
+    const now = new Date();
+    setPromptSuggestionIndex(
+      (now.getDate() + now.getHours() + now.getMinutes()) % composerPromptSuggestions.length,
+    );
+  }, []);
+
+  useEffect(() => {
+    if (!shouldAnimateComposerPrompt) {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setPromptSuggestionIndex((current) => (current + 1) % composerPromptSuggestions.length);
+      setPromptRevealCycle((current) => current + 1);
+    }, Math.max(composerPromptRotationMs, activePromptSuggestion.length * 34 + 2200));
+
+    return () => window.clearTimeout(timeoutId);
+  }, [activePromptSuggestion, shouldAnimateComposerPrompt]);
 
   return (
     <main
@@ -141,6 +197,7 @@ function TutorWorkspace() {
         <ChatThread
           messages={activeSession?.messages ?? []}
           isTutorPending={isTutorPending}
+          tutorLabel={personalityLabels[agentSettings.personality]}
           agentState={agentState}
           orbColors={personalityColors[agentSettings.personality]}
           getInputVolume={conversation.getInputVolume}
@@ -157,30 +214,40 @@ function TutorWorkspace() {
           <label className="chat__composer-label" htmlFor="typed-tutor-message">Message Teach Me</label>
           <div className="chat__composer-panel">
             <div className="chat__composer-input">
-              {shouldShowComposerPrompt && (
+              {shouldAnimateComposerPrompt && (
                 <span className="chat__composer-placeholder" aria-hidden="true">
-                  <ShimmeringText
-                    text="How can I help you today?"
-                    duration={1.8}
-                    repeatDelay={0.4}
-                    startOnView={false}
-                    spread={2.4}
-                    color={composerPlaceholderColor}
-                    shimmerColor={composerPlaceholderShimmer}
-                  />
+                  <span
+                    key={`${activePromptSuggestion}-${promptRevealCycle}`}
+                    className="chat__composer-prompt-stagger"
+                  >
+                    {staggerPromptCharacters.map((item, index) => (
+                      <span
+                        key={`${index}-${item.char}`}
+                        className="chat__composer-prompt-stagger__char"
+                        style={{
+                          "--chat-composer-prompt-delay": item.delay,
+                          whiteSpace: item.isSpace ? "pre" : undefined,
+                        } as CSSProperties}
+                      >
+                        {item.char}
+                      </span>
+                    ))}
+                  </span>
                 </span>
               )}
               <textarea
                 id="typed-tutor-message"
                 value={textDraft}
                 onChange={(event) => setTextDraft(event.target.value)}
+                onFocus={() => setIsComposerFocused(true)}
+                onBlur={() => setIsComposerFocused(false)}
                 onKeyDown={(event) => {
                   if (event.key === "Enter" && !event.shiftKey) {
                     event.preventDefault();
                     void handleTextSubmit();
                   }
                 }}
-                placeholder=""
+                placeholder={shouldShowComposerPrompt && !shouldAnimateComposerPrompt ? activePromptSuggestion : ""}
                 disabled={isTutorPending}
                 rows={2}
               />
@@ -194,15 +261,6 @@ function TutorWorkspace() {
                     setAgentSettings((current) => ({ ...current, personality }))
                   }
                 />
-                <button
-                  type="button"
-                  className="chat__composer-icon chat__composer-theme"
-                  onClick={handleThemeToggle}
-                  aria-label={`Switch to ${studioTheme === "light" ? "dark" : "light"} mode`}
-                  title={studioTheme === "light" ? "Dark mode" : "Light mode"}
-                >
-                  {studioTheme === "light" ? <Moon size={18} /> : <Sun size={18} />}
-                </button>
                 <button
                   type="button"
                   className={`chat__composer-icon ${isVoiceActive ? "is-live" : ""}`}

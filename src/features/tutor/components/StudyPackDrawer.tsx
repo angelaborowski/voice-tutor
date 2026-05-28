@@ -69,6 +69,9 @@ export function StudyPackDrawer({
   const quizAnsweredCount = Object.keys(quizMarks).length;
   const quizCorrectCount = Object.values(quizMarks).filter(Boolean).length;
   const isQuizComplete = quizItems.length > 0 && quizAnsweredCount === quizItems.length;
+  const modelAnswerSentences = note ? splitSentences(note.modelAnswer) : [];
+  const modelAnswerLead = modelAnswerSentences[0] ?? note?.modelAnswer ?? "";
+  const modelAnswerSteps = modelAnswerSentences.slice(1, 5);
 
   useEffect(() => {
     setActiveCardIndex(0);
@@ -203,8 +206,17 @@ export function StudyPackDrawer({
                 )}
 
                 <div className="study-pack-note__block">
-                  <h3>Model answer</h3>
-                  <p className="study-pack-note__model">{note.modelAnswer}</p>
+                  <h3>Summary answer</h3>
+                  <div className="study-pack-note__answer">
+                    <p>{modelAnswerLead}</p>
+                    {modelAnswerSteps.length > 0 && (
+                      <ul className="study-pack-note__answer-points">
+                        {modelAnswerSteps.map((sentence) => (
+                          <li key={sentence}>{sentence}</li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
                 </div>
 
                 <div className="study-pack-note__block">
@@ -489,15 +501,19 @@ export function StudyPackDrawer({
 
 function contextForKeyword(term: string, modelAnswer: string) {
   const fallback = `Use ${term} accurately in the next spoken answer.`;
-  const sentences = modelAnswer
-    .split(/(?<=[.!?])\s+/)
-    .map((sentence) => sentence.trim())
-    .filter(Boolean);
+  const sentences = splitSentences(modelAnswer);
   const match = sentences.find((sentence) =>
     sentence.toLowerCase().includes(term.toLowerCase()),
   );
 
   return match ?? fallback;
+}
+
+function splitSentences(text: string) {
+  return text
+    .split(/(?<=[.!?])\s+/)
+    .map((sentence) => sentence.trim())
+    .filter(Boolean);
 }
 
 function flashcardTypeLabel(type: NonNullable<StudyNote["flashcards"][number]["type"]>) {

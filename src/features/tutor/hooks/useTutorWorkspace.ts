@@ -2,8 +2,8 @@ import { useConversation } from "@elevenlabs/react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { fetchHealth, generateStudyNote, getVoiceToken, sendTutorMessage, syncTutorPersonality } from "@/features/tutor/api/client";
-import { AGENT_SETTINGS_STORAGE_KEY, STUDIO_BACKDROP_STORAGE_KEY, getPersonalityVoiceId, hasLearnerTurn, isMeaningfulSpeechText, personalityLabels, readAgentSettings, readStoredSessions, readStudioBackdrop, readStudioTheme, type AgentSettings, type StudioTheme, type StudyPackTab, type StudioBackdrop } from "@/features/tutor/domain/settings";
+import { fetchHealth, generateStudyNote, getVoiceSignedUrl, sendTutorMessage, syncTutorPersonality } from "@/features/tutor/api/client";
+import { AGENT_SETTINGS_STORAGE_KEY, STUDIO_BACKDROP_STORAGE_KEY, hasLearnerTurn, isMeaningfulSpeechText, personalityLabels, readAgentSettings, readStoredSessions, readStudioBackdrop, type AgentSettings, type StudioTheme, type StudyPackTab, type StudioBackdrop } from "@/features/tutor/domain/settings";
 import { STORAGE_KEY, createId, createStarterSession, getTimeLabel, previewFromMessages, titleFromMessages } from "@/features/tutor/domain/tutorContent";
 import type { HealthStatus, RevisionSession, StudyNote, TutorMessage } from "@/features/tutor/domain/types";
 import type { AgentState } from "@/components/ui/orb";
@@ -30,7 +30,7 @@ export function useTutorWorkspace() {
   const [sessionSearch, setSessionSearch] = useState("");
   const [agentSettings, setAgentSettings] = useState<AgentSettings>(readAgentSettings);
   const [studioBackdrop] = useState<StudioBackdrop>(readStudioBackdrop);
-  const [studioTheme, setStudioTheme] = useState<StudioTheme>(readStudioTheme);
+  const studioTheme: StudioTheme = "light";
   const [isStudyPackOpen, setIsStudyPackOpen] = useState(false);
   const [isStudyPackPending, setIsStudyPackPending] = useState(false);
   const [activePackTab, setActivePackTab] = useState<StudyPackTab>("summary");
@@ -136,12 +136,7 @@ export function useTutorWorkspace() {
       setStatusMessage(typeof error === "string" ? error : "Voice session error");
     },
     onConnect: () => {
-      const voiceId = getPersonalityVoiceId(agentSettings.personality);
-      setStatusMessage(
-        voiceId
-          ? `${personalityLabels[agentSettings.personality]} voice live`
-          : "Voice live",
-      );
+      setStatusMessage(`${personalityLabels[agentSettings.personality]} voice live`);
     },
     onDisconnect: () => {
       setStatusMessage("Voice stopped");
@@ -150,10 +145,6 @@ export function useTutorWorkspace() {
       setStatusMessage("Interrupted. Your tutor is listening again.");
     },
   });
-
-  const handleThemeToggle = useCallback(() => {
-    setStudioTheme((currentTheme) => (currentTheme === "light" ? "dark" : "light"));
-  }, []);
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(sessions.filter(hasLearnerTurn)));
@@ -176,25 +167,6 @@ export function useTutorWorkspace() {
 
     document.cookie = `theme=${studioTheme}; max-age=31536000; path=/; SameSite=Lax`;
   }, [studioTheme]);
-
-  useEffect(() => {
-    const handleKeydown = (event: KeyboardEvent) => {
-      const target = event.target as HTMLElement | null;
-      const tagName = target?.tagName.toLowerCase();
-
-      if (tagName === "input" || tagName === "textarea" || target?.isContentEditable) {
-        return;
-      }
-
-      if (event.shiftKey && event.key.toLowerCase() === "t") {
-        event.preventDefault();
-        handleThemeToggle();
-      }
-    };
-
-    document.addEventListener("keydown", handleKeydown);
-    return () => document.removeEventListener("keydown", handleKeydown);
-  }, [handleThemeToggle]);
 
   useEffect(() => {
     fetchHealth()
@@ -249,20 +221,10 @@ export function useTutorWorkspace() {
 
     try {
       setStatusMessage("Connecting voice...");
-      const token = await getVoiceToken();
-      const voiceId = getPersonalityVoiceId(agentSettings.personality);
-      void conversation.startSession({
-        conversationToken: token,
-        connectionType: "webrtc",
-        ...(voiceId
-          ? {
-              overrides: {
-                tts: {
-                  voiceId,
-                },
-              },
-            }
-          : {}),
+      const signedUrl = await getVoiceSignedUrl();
+      await conversation.startSession({
+        signedUrl,
+        connectionType: "websocket",
       });
     } catch (error) {
       setStatusMessage(error instanceof Error ? error.message : "Voice start failed");
@@ -386,7 +348,6 @@ export function useTutorWorkspace() {
     handleNewChat,
     handleOpenStudyPack,
     handleSelectSession,
-    handleThemeToggle,
     handleToggleCollapse,
     handleVoiceToggle,
     hasSessionSearch,

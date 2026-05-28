@@ -8,6 +8,7 @@ import type { TutorMessage } from "@/features/tutor/domain/types";
 export function ChatThread({
   messages,
   isTutorPending,
+  tutorLabel,
   agentState,
   orbColors,
   getInputVolume,
@@ -15,6 +16,7 @@ export function ChatThread({
 }: {
   messages: TutorMessage[];
   isTutorPending: boolean;
+  tutorLabel: string;
   agentState: AgentState;
   orbColors: [string, string];
   getInputVolume?: () => number;
@@ -79,7 +81,7 @@ export function ChatThread({
                 <span>Tutor</span>
                 <div className="thread__thinking">
                   <ShimmeringText
-                    text="Agent is thinking..."
+                    text={`${tutorLabel} is thinking...`}
                     duration={1.15}
                     repeatDelay={0.1}
                     startOnView={false}

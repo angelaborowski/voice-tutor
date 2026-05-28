@@ -126,6 +126,7 @@ app.get("/api/health", (_req, res) => {
     llm: openai ? OPENAI_MODEL : "local fallback",
     webSocketPath: voiceTransportConfigured ? "/ws" : null,
     tokenPath: "/api/token",
+    signedUrlPath: "/api/signed-url",
     personality: currentPersonality,
   });
 });
@@ -201,6 +202,28 @@ app.get("/api/token", async (_req, res) => {
   } catch (error) {
     console.error("Token error", error);
     res.status(500).json({ error: "Failed to create ElevenLabs token." });
+  }
+});
+
+app.get("/api/signed-url", async (_req, res) => {
+  if (!elevenlabs || !ELEVENLABS_SPEECH_ENGINE_ID || !voiceTransportConfigured) {
+    res.status(503).json({
+      error: isVercel && !voiceTransportConfigured
+        ? "Live voice needs a separate WebSocket voice server outside Vercel."
+        : "ElevenLabs API key and Speech Engine ID are required for live voice.",
+    });
+    return;
+  }
+
+  try {
+    const response =
+      await elevenlabs.conversationalAi.conversations.getSignedUrl({
+        agentId: ELEVENLABS_SPEECH_ENGINE_ID,
+      });
+    res.json({ signedUrl: response.signedUrl });
+  } catch (error) {
+    console.error("Signed URL error", error);
+    res.status(500).json({ error: "Failed to create ElevenLabs signed URL." });
   }
 });
 

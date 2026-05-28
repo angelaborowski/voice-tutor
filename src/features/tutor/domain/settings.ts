@@ -156,19 +156,6 @@ export function readStudioBackdrop(): StudioBackdrop {
   }
 }
 
-export function readStudioTheme(): StudioTheme {
-  try {
-    const cookieTheme = window.Cookies?.get("theme") ?? document.cookie
-      .split("; ")
-      .find((cookie) => cookie.startsWith("theme="))
-      ?.split("=")[1];
-
-    return cookieTheme === "dark" ? "dark" : "light";
-  } catch {
-    return "light";
-  }
-}
-
 export function isMeaningfulSpeechText(value: string) {
   const normalized = value.trim();
   if (!normalized) return false;

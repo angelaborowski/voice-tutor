@@ -183,6 +183,50 @@
   text-overflow: ellipsis;
 }
 
+.chat__composer-prompt-stagger {
+  max-width: 100%;
+  display: inline-flex;
+  align-items: baseline;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.chat__composer-prompt-stagger__char {
+  display: inline-block;
+  opacity: 0.01;
+  transform: translateY(0.7em) rotate(0.001deg);
+  animation: chat-composer-prompt-stagger-up 0.46s cubic-bezier(0.625, 0.05, 0, 1) forwards;
+  animation-delay: var(--chat-composer-prompt-delay, 0ms);
+}
+
+@keyframes chat-composer-prompt-stagger-up {
+  0% {
+    opacity: 0.01;
+    transform: translateY(0.7em) rotate(0.001deg);
+    filter: blur(1.5px);
+  }
+
+  28% {
+    opacity: 1;
+    filter: blur(0);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0) rotate(0.001deg);
+    filter: blur(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chat__composer-prompt-stagger__char {
+    opacity: 1;
+    transform: none;
+    animation: none;
+    filter: none;
+  }
+}
+
 .chat__composer textarea {
   position: relative;
   z-index: 1;
@@ -255,10 +299,6 @@
 .chat__composer-icon.is-live {
   background: rgba(44, 191, 109, 0.12);
   color: #1a8f50;
-}
-
-.chat__composer-theme {
-  background: rgba(23, 18, 17, 0.045);
 }
 
 .tutor-picker {

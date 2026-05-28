@@ -53,7 +53,7 @@
     drop-shadow(0 0 1.2rem rgba(255, 255, 255, 0.38))
     drop-shadow(0 0 4.5rem color-mix(in srgb, var(--orb-glow) 42%, transparent))
     drop-shadow(0 0 7rem rgba(255, 255, 255, 0.08));
-  animation: landing-float 4.8s ease-in-out infinite;
+  animation: landing-float 8.5s ease-in-out infinite;
   transition: filter 0.8s ease;
 }
 
