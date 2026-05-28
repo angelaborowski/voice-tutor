@@ -177,6 +177,32 @@
   padding: 0.86rem;
 }
 
+.study-pack-math {
+  max-width: 100%;
+  display: inline-block;
+  overflow-x: auto;
+  overflow-y: hidden;
+  vertical-align: -0.08em;
+}
+
+.study-pack-math--display {
+  display: block;
+  margin: 0.46rem 0;
+  text-align: center;
+}
+
+.study-pack-math .katex {
+  max-width: 100%;
+  color: inherit;
+  font-size: 0.96em;
+}
+
+.study-pack-math .katex-display {
+  margin: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
 .study-pack__summary,
 .study-pack__next,
 .study-pack__grid > div,

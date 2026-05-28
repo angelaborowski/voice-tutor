@@ -1,5 +1,7 @@
-import { createElement, useEffect, useState } from "react";
+import { createElement, useEffect, useState, type ElementType } from "react";
 import type { ReactNode } from "react";
+import katex from "katex";
+import "katex/dist/katex.min.css";
 import {
   CheckCircle2,
   ChevronLeft,
@@ -124,7 +126,7 @@ export function StudyPackDrawer({
       <header className="study-pack__header">
         <div>
           <span>Generated from your session</span>
-          <strong>{note?.topic ?? "Learning pack"}</strong>
+          <MathText as="strong" text={note?.topic ?? "Learning pack"} />
         </div>
         <button type="button" onClick={onClose} aria-label="Close learning pack">
           <X size={17} />
@@ -171,15 +173,17 @@ export function StudyPackDrawer({
             <section className="study-pack__section">
               <article className="study-pack-note">
                 <header>
-                  <h2>{note.topic}</h2>
-                  <p>{note.definition}</p>
+                  <MathText as="h2" text={note.topic} />
+                  <MathText as="p" text={note.definition} />
                 </header>
 
                 <div className="study-pack-note__block study-pack-note__block--summary">
                   <h3>Summary notes</h3>
                   <ul className="study-pack-note__summary-list">
                     {(summaryPoints.length ? summaryPoints : [note.summary]).map((point) => (
-                      <li key={point}>{point}</li>
+                      <li key={point}>
+                        <MathText text={point} />
+                      </li>
                     ))}
                   </ul>
                 </div>
@@ -190,7 +194,7 @@ export function StudyPackDrawer({
                     {note.covered.map((item, index) => (
                       <li key={item}>
                         <span>{String(index + 1).padStart(2, "0")}</span>
-                        <p>{item}</p>
+                        <MathText as="p" text={item} />
                       </li>
                     ))}
                   </ol>
@@ -201,7 +205,9 @@ export function StudyPackDrawer({
                     <h3>Watch-outs</h3>
                     <ul className="study-pack-note__watchouts">
                       {note.gaps.map((gap) => (
-                        <li key={gap}>{gap}</li>
+                        <li key={gap}>
+                          <MathText text={gap} />
+                        </li>
                       ))}
                     </ul>
                   </div>
@@ -230,8 +236,8 @@ export function StudyPackDrawer({
                         onClick={() => setActiveKeywordIndex(index)}
                       >
                         <span>{String(index + 1).padStart(2, "0")}</span>
-                        <strong>{term}</strong>
-                        <p>{contextForKeyword(term, note.modelAnswer)}</p>
+                        <MathText as="strong" text={term} />
+                        <MathText as="p" text={contextForKeyword(term, note.modelAnswer)} />
                       </button>
                     ))}
                   </div>
@@ -278,7 +284,7 @@ export function StudyPackDrawer({
                         {activeCard.type && <b>{flashcardTypeLabel(activeCard.type)}</b>}
                         {activeCard.difficulty && <b>{activeCard.difficulty}</b>}
                       </span>
-                      <strong>{activeCard.front}</strong>
+                      <MathText as="strong" text={activeCard.front} />
                       <em>
                         <Eye size={15} />
                         Tap to reveal
@@ -289,9 +295,9 @@ export function StudyPackDrawer({
                         <>
                           <span className="study-pack-flashcard__meta">
                             <small>Answer</small>
-                            {activeCard.keyword && <b>{activeCard.keyword}</b>}
+                            {activeCard.keyword && <MathText as="b" text={activeCard.keyword} />}
                           </span>
-                          <strong>{activeCard.back}</strong>
+                          <MathText as="strong" text={activeCard.back} />
                         </>
                       )}
                     </span>
@@ -392,12 +398,12 @@ export function StudyPackDrawer({
 
                   <article className="study-pack-quiz__card">
                     <h3>Quick check</h3>
-                    <p>{activeQuizItem.question}</p>
+                    <MathText as="p" text={activeQuizItem.question} />
 
                     {revealedQuizAnswers.has(activeQuizIndex) ? (
                       <div className="study-pack-quiz__answer">
                         <span>Answer</span>
-                        <p>{activeQuizItem.answer}</p>
+                        <MathText as="p" text={activeQuizItem.answer} />
                       </div>
                     ) : (
                       <button type="button" onClick={revealQuizAnswer}>
@@ -496,6 +502,68 @@ function flashcardRatingLabel(rating: FlashcardRating) {
   if (rating === "again") return "Struggled";
   if (rating === "easy") return "Easy";
   return "Got it";
+}
+
+type MathTextProps = {
+  as?: ElementType;
+  className?: string;
+  text: string;
+};
+
+function MathText({ as = "span", className, text }: MathTextProps) {
+  return createElement(as, { className }, renderMathText(text));
+}
+
+function renderMathText(text: string) {
+  const parts: ReactNode[] = [];
+  const mathPattern = /(\$\$[\s\S]+?\$\$|\\\[[\s\S]+?\\\]|\\\([\s\S]+?\\\)|\$[^$\n]+?\$)/g;
+  let lastIndex = 0;
+
+  for (const match of text.matchAll(mathPattern)) {
+    const matchText = match[0];
+    const index = match.index ?? 0;
+    if (index > lastIndex) {
+      parts.push(text.slice(lastIndex, index));
+    }
+
+    const isDisplay = matchText.startsWith("$$") || matchText.startsWith("\\[");
+    const expression = unwrapMathExpression(matchText);
+    parts.push(
+      <span
+        key={`${index}-${matchText}`}
+        className={isDisplay ? "study-pack-math study-pack-math--display" : "study-pack-math"}
+        dangerouslySetInnerHTML={{
+          __html: katex.renderToString(expression, {
+            displayMode: isDisplay,
+            throwOnError: false,
+          }),
+        }}
+      />,
+    );
+    lastIndex = index + matchText.length;
+  }
+
+  if (lastIndex < text.length) {
+    parts.push(text.slice(lastIndex));
+  }
+
+  return parts.length ? parts : text;
+}
+
+function unwrapMathExpression(value: string) {
+  if (value.startsWith("$$") && value.endsWith("$$")) {
+    return value.slice(2, -2).trim();
+  }
+  if (value.startsWith("\\[") && value.endsWith("\\]")) {
+    return value.slice(2, -2).trim();
+  }
+  if (value.startsWith("\\(") && value.endsWith("\\)")) {
+    return value.slice(2, -2).trim();
+  }
+  if (value.startsWith("$") && value.endsWith("$")) {
+    return value.slice(1, -1).trim();
+  }
+  return value;
 }
 
 function LordIcon({ src }: { src: string }) {
