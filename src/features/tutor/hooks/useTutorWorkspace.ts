@@ -1,11 +1,11 @@
 import { useConversation } from "@elevenlabs/react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { fetchHealth, generateStudyNote, getVoiceToken, sendTutorMessage, syncTutorPersonality } from "@/features/tutor/api/client";
 import { AGENT_SETTINGS_STORAGE_KEY, STUDIO_BACKDROP_STORAGE_KEY, getPersonalityVoiceId, hasLearnerTurn, isMeaningfulSpeechText, personalityLabels, readAgentSettings, readStoredSessions, readStudioBackdrop, readStudioTheme, type AgentSettings, type StudioTheme, type StudyPackTab, type StudioBackdrop } from "@/features/tutor/domain/settings";
 import { STORAGE_KEY, createId, createStarterSession, getTimeLabel, previewFromMessages, titleFromMessages } from "@/features/tutor/domain/tutorContent";
-import type { HealthStatus, RevisionSession, TutorMessage } from "@/features/tutor/domain/types";
+import type { HealthStatus, RevisionSession, StudyNote, TutorMessage } from "@/features/tutor/domain/types";
 import type { AgentState } from "@/components/ui/orb";
 
 type VoicePayload = {
@@ -16,6 +16,7 @@ type VoicePayload = {
 
 export function useTutorWorkspace() {
   const navigate = useNavigate();
+  const studyNoteRequestsRef = useRef<Map<string, Promise<StudyNote>>>(new Map());
   const [sessions, setSessions] = useState<RevisionSession[]>(() => {
     const stored = readStoredSessions();
     const starter = createStarterSession();
@@ -46,15 +47,57 @@ export function useTutorWorkspace() {
     [activeSessionId, sessions],
   );
 
-  const updateActiveSession = useCallback(
-    (updater: (session: RevisionSession) => RevisionSession) => {
+  const updateSession = useCallback(
+    (sessionId: string, updater: (session: RevisionSession) => RevisionSession) => {
       setSessions((current) =>
         current.map((session) =>
-          session.id === activeSessionId ? updater(session) : session,
+          session.id === sessionId ? updater(session) : session,
         ),
       );
     },
-    [activeSessionId],
+    [],
+  );
+
+  const updateActiveSession = useCallback(
+    (updater: (session: RevisionSession) => RevisionSession) => {
+      updateSession(activeSessionId, updater);
+    },
+    [activeSessionId, updateSession],
+  );
+
+  const requestStudyNote = useCallback(
+    async (session: RevisionSession) => {
+      const requestKey = studyNoteRequestKey(session);
+      let request = studyNoteRequestsRef.current.get(requestKey);
+
+      if (!request) {
+        request = generateStudyNote(session.messages);
+        studyNoteRequestsRef.current.set(requestKey, request);
+      }
+
+      try {
+        const note = await request;
+        updateSession(session.id, (currentSession) => {
+          if (studyNoteRequestKey(currentSession) !== requestKey || currentSession.studyNote) {
+            return currentSession;
+          }
+
+          return {
+            ...currentSession,
+            title: note.topic && note.topic !== "Study session" ? note.topic : currentSession.title,
+            studyNote: note,
+            updatedAt: Date.now(),
+          };
+        });
+
+        return note;
+      } finally {
+        if (studyNoteRequestsRef.current.get(requestKey) === request) {
+          studyNoteRequestsRef.current.delete(requestKey);
+        }
+      }
+    },
+    [updateSession],
   );
 
   const appendMessage = useCallback(
@@ -171,20 +214,12 @@ export function useTutorWorkspace() {
 
   useEffect(() => {
     const latest = activeSession?.messages.at(-1);
-    if (!latest || latest.role !== "tutor" || activeSession.messages.length < 2) {
+    if (!latest || latest.role !== "tutor" || activeSession.messages.length < 2 || activeSession.studyNote) {
       return;
     }
 
-    generateStudyNote(activeSession.messages)
-      .then((note) => {
-        updateActiveSession((session) => ({
-          ...session,
-          title: note.topic && note.topic !== "Study session" ? note.topic : session.title,
-          studyNote: note,
-          updatedAt: Date.now(),
-        }));
-      });
-  }, [activeSession?.messages, activeSession?.id, updateActiveSession]);
+    void requestStudyNote(activeSession);
+  }, [activeSession, requestStudyNote]);
 
   const handleNewChat = useCallback(() => {
     const next = createStarterSession();
@@ -300,15 +335,12 @@ export function useTutorWorkspace() {
     }
 
     setIsStudyPackPending(true);
-    const note = await generateStudyNote(activeSession.messages);
-    updateActiveSession((session) => ({
-      ...session,
-      title: note.topic && note.topic !== "Study session" ? note.topic : session.title,
-      studyNote: note,
-      updatedAt: Date.now(),
-    }));
-    setStatusMessage("Learning pack ready");
-    setIsStudyPackPending(false);
+    try {
+      await requestStudyNote(activeSession);
+      setStatusMessage("Learning pack ready");
+    } finally {
+      setIsStudyPackPending(false);
+    }
   };
 
   const agentState: AgentState = isTutorPending
@@ -370,4 +402,8 @@ export function useTutorWorkspace() {
     visibleSessions,
     handleTextSubmit,
   };
+}
+
+function studyNoteRequestKey(session: RevisionSession) {
+  return `${session.id}:${session.messages.map((message) => message.id).join("|")}`;
 }

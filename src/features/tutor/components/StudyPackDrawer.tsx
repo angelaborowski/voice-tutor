@@ -291,7 +291,7 @@ export function StudyPackDrawer({
                     onClick={() => setIsCardFlipped((flipped) => !flipped)}
                     aria-label={isCardFlipped ? "Showing answer. Tap to show prompt." : "Showing prompt. Tap to reveal answer."}
                   >
-                    <span className="study-pack-flashcard__face study-pack-flashcard__front">
+                    <span className="study-pack-flashcard__face study-pack-flashcard__front" aria-hidden={isCardFlipped}>
                       <span className="study-pack-flashcard__meta">
                         <small>Prompt</small>
                         {activeCard.type && <b>{flashcardTypeLabel(activeCard.type)}</b>}
@@ -303,12 +303,16 @@ export function StudyPackDrawer({
                         Tap to reveal
                       </em>
                     </span>
-                    <span className="study-pack-flashcard__face study-pack-flashcard__back">
-                      <span className="study-pack-flashcard__meta">
-                        <small>Answer</small>
-                        {activeCard.keyword && <b>{activeCard.keyword}</b>}
-                      </span>
-                      <strong>{activeCard.back}</strong>
+                    <span className="study-pack-flashcard__face study-pack-flashcard__back" aria-hidden={!isCardFlipped}>
+                      {isCardFlipped && (
+                        <>
+                          <span className="study-pack-flashcard__meta">
+                            <small>Answer</small>
+                            {activeCard.keyword && <b>{activeCard.keyword}</b>}
+                          </span>
+                          <strong>{activeCard.back}</strong>
+                        </>
+                      )}
                     </span>
                   </button>
 
