@@ -43,7 +43,7 @@ export const infoPages: Record<LandingInfoPageKey, {
   problem: {
     kicker: "At home",
     title: "Tutoring works. Access does not.",
-    body: "The evidence is not the problem. Regular, targeted help can move learning, but private tutoring is still priced like a scarce appointment.",
+    body: "Good tutoring works. Booking it every week is what gets expensive.",
     proof: ["voice practice", "lower monthly cost", "study support"],
     cards: [
       { title: "Price", body: "Regular help quickly becomes too expensive for ordinary homework nights." },
@@ -90,21 +90,21 @@ export const problemCostStats = [
 
 export const problemProofStats = [
   {
-    label: "Fact 1",
+    label: "Works",
     value: "+5 months",
     body: "One-to-one tuition adds around five months of progress on average.",
     source: "Education Endowment Foundation",
     href: "https://educationendowmentfoundation.org.uk/education-evidence/teaching-learning-toolkit/one-to-one-tuition",
   },
   {
-    label: "Fact 2",
+    label: "Costs",
     value: "£35-£55/hr",
     body: "Common UK GCSE private tutoring rates for experienced tutors.",
     source: "TutorLab UK cost guide",
     href: "https://www.tutorlab.uk/blog/how-much-does-a-private-tutor-cost-uk",
   },
   {
-    label: "Fact 3",
+    label: "Adds up",
     value: "£140-£220/mo",
     body: "One hour a week turns into a monthly bill before exam extras.",
     source: "Derived from TutorLab rates",

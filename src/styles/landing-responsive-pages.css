@@ -226,6 +226,7 @@
   .landing__insight-grid,
   .landing__mode-grid,
   .landing__pack-grid,
+  .landing__problem-fact-sheet,
   .landing__problem-evidence,
   .landing__problem-breakdown,
   .landing__pack-preview {
@@ -238,7 +239,7 @@
   }
 
   .landing__problem-proof {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: 1fr;
   }
 
   .landing__problem-cost-grid,

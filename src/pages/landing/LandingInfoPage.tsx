@@ -92,11 +92,11 @@ export function LandingInfoPage({ page }: { page: LandingInfoPageKey }) {
         ) : (
           <div className="landing__problem-fact-sheet" aria-label="Private tutoring evidence and cost">
             <div className="landing__problem-fact-head">
-              <span>What the facts say</span>
-              <strong>Private tutoring is effective, but expensive to use regularly.</strong>
+              <span>The short version</span>
+              <strong>Tutoring helps. The hourly model prices too many families out.</strong>
             </div>
             <div className="landing__problem-proof">
-              {problemProofStats.map((stat) => (
+              {problemProofStats.slice(0, 3).map((stat) => (
                 <article key={stat.label}>
                   <span>{stat.label}</span>
                   <strong>{stat.value}</strong>
