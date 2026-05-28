@@ -4,9 +4,11 @@ import { useNavigate } from "react-router-dom";
 
 import { CustomEase, gsap, useGSAP } from "@/lib/gsap";
 import { landingNavItems } from "./data";
+import { useLandingTransitionNavigate } from "./LandingRouteTransition";
 
 export function LandingChromeMenu({ onStart, onWaitlist }: { onStart: () => void; onWaitlist?: () => void }) {
   const navigate = useNavigate();
+  const transitionTo = useLandingTransitionNavigate();
   const navRef = useRef<HTMLDivElement | null>(null);
   const sidenavTimelineRef = useRef<gsap.core.Timeline | null>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -97,13 +99,29 @@ export function LandingChromeMenu({ onStart, onWaitlist }: { onStart: () => void
     }
 
     setIsMenuOpen(false);
-    window.setTimeout(() => navigate(target), 220);
+    window.setTimeout(() => {
+      if (transitionTo) {
+        transitionTo(target);
+        return;
+      }
+
+      navigate(target);
+    }, 80);
+  };
+
+  const handleLogoClick = () => {
+    if (transitionTo) {
+      transitionTo("/");
+      return;
+    }
+
+    navigate("/");
   };
 
   return (
     <div ref={navRef} className="landing__nav-shell">
       <header className="landing__chrome">
-        <button type="button" className="landing__logo landing__logo-button" onClick={() => navigate("/")}>
+        <button type="button" className="landing__logo landing__logo-button" onClick={handleLogoClick}>
           <strong>Teach Me</strong>
         </button>
         <div className="landing__chrome-actions">

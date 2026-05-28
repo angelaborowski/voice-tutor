@@ -227,7 +227,7 @@ export function useTutorWorkspace() {
     try {
       setStatusMessage("Connecting voice...");
       await navigator.mediaDevices.getUserMedia({ audio: true });
-      const token = await getVoiceToken();
+      const { token } = await getVoiceToken(agentSettings.personality);
       await conversation.startSession({
         conversationToken: token,
       });

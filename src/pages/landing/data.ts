@@ -42,8 +42,8 @@ export const infoPages: Record<LandingInfoPageKey, {
 }> = {
   problem: {
     kicker: "At home",
-    title: "The problem is access.",
-    body: "Private tutoring works. The problem is that regular help is still priced like a scarce appointment.",
+    title: "Tutoring works. Access does not.",
+    body: "The evidence is not the problem. Regular, targeted help can move learning, but private tutoring is still priced like a scarce appointment.",
     proof: ["voice practice", "lower monthly cost", "study support"],
     cards: [
       { title: "Price", body: "Regular help quickly becomes too expensive for ordinary homework nights." },
@@ -92,23 +92,44 @@ export const problemProofStats = [
   {
     label: "Fact 1",
     value: "+5 months",
-    body: "One-to-one tuition can add around five months of progress on average.",
+    body: "One-to-one tuition adds around five months of progress on average.",
     source: "Education Endowment Foundation",
     href: "https://educationendowmentfoundation.org.uk/education-evidence/teaching-learning-toolkit/one-to-one-tuition",
   },
   {
     label: "Fact 2",
     value: "£35-£55/hr",
-    body: "Common UK GCSE private tutoring rates make regular support expensive.",
+    body: "Common UK GCSE private tutoring rates for experienced tutors.",
     source: "TutorLab UK cost guide",
     href: "https://www.tutorlab.uk/blog/how-much-does-a-private-tutor-cost-uk",
   },
   {
     label: "Fact 3",
     value: "£140-£220/mo",
-    body: "One hour a week turns into a large monthly bill before exam-season extras.",
+    body: "One hour a week turns into a monthly bill before exam extras.",
     source: "Derived from TutorLab rates",
     href: "https://www.tutorlab.uk/blog/how-much-does-a-private-tutor-cost-uk",
+  },
+  {
+    label: "Fact 4",
+    value: "29%",
+    body: "Secondary pupils in England and Wales who have had private tutoring.",
+    source: "Sutton Trust",
+    href: "https://www.suttontrust.com/wp-content/uploads/2026/02/Private-Tutoring-2026.pdf",
+  },
+  {
+    label: "Fact 5",
+    value: "25%",
+    body: "Year 11 pupils are the most likely year group to have tutoring.",
+    source: "Sutton Trust",
+    href: "https://www.suttontrust.com/wp-content/uploads/2026/02/Private-Tutoring-2026.pdf",
+  },
+  {
+    label: "Fact 6",
+    value: "23% vs 30%",
+    body: "Worst-off households access private tutoring less than the best-off.",
+    source: "Sutton Trust",
+    href: "https://www.suttontrust.com/wp-content/uploads/2026/02/Private-Tutoring-2026.pdf",
   },
 ] as const;
 

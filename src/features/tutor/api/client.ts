@@ -77,16 +77,24 @@ export async function generateStudyNote(
   }
 }
 
-export async function getVoiceToken(): Promise<string> {
-  const response = await fetch("/api/token");
+export async function getVoiceToken(personality?: string): Promise<{ token: string; voiceId?: string }> {
+  const searchParams = new URLSearchParams();
+  if (personality) {
+    searchParams.set("personality", personality);
+  }
+
+  const response = await fetch(`/api/token${searchParams.size ? `?${searchParams.toString()}` : ""}`);
   if (!response.ok) {
     throw new Error(`Voice token request failed (${response.status})`);
   }
 
-  const data = (await response.json()) as { token?: string };
+  const data = (await response.json()) as { token?: string; voiceId?: string };
   if (!data.token) {
     throw new Error("Voice token response did not include a token.");
   }
 
-  return data.token;
+  return {
+    token: data.token,
+    voiceId: data.voiceId?.trim() || undefined,
+  };
 }

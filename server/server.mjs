@@ -182,7 +182,7 @@ app.post("/api/waitlist", async (req, res) => {
   }
 });
 
-app.get("/api/token", async (_req, res) => {
+app.get("/api/token", async (req, res) => {
   if (!elevenlabs || !ELEVENLABS_SPEECH_ENGINE_ID || !voiceTransportConfigured) {
     res.status(503).json({
       error: isVercel && !voiceTransportConfigured
@@ -193,11 +193,19 @@ app.get("/api/token", async (_req, res) => {
   }
 
   try {
+    const requestedPersonality = normalizePersonality(req.query?.personality);
+    const personality = requestedPersonality ?? currentPersonality;
+    currentPersonality = personality;
+
     const response =
       await elevenlabs.conversationalAi.conversations.getWebrtcToken({
         agentId: ELEVENLABS_SPEECH_ENGINE_ID,
       });
-    res.json({ token: response.token });
+    res.json({
+      token: response.token,
+      personality,
+      voiceId: tutorVoiceIds[personality]?.trim() || undefined,
+    });
   } catch (error) {
     console.error("Token error", error);
     res.status(500).json({ error: "Failed to create ElevenLabs token." });
