@@ -1,0 +1,262 @@
+.app-sidebar {
+  position: sticky;
+  top: 1.25rem;
+  width: min(calc(100% - 2.5rem), 19.5rem);
+  height: calc(100vh - 2.5rem);
+  min-height: 0;
+  justify-self: center;
+  display: grid;
+  grid-template-rows: auto auto auto minmax(0, 1fr) auto;
+  gap: 0.82rem;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 0.78rem;
+  background: #2b2929;
+  color: #f7f7f4;
+  padding: 1.08rem 1rem 1rem;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 1.6rem 4.5rem rgba(0, 0, 0, 0.34);
+  transition: padding 0.32s cubic-bezier(0.65, 0, 0, 1);
+}
+
+.app-sidebar::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.07), transparent 13rem),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.04), transparent 62%);
+  pointer-events: none;
+}
+
+.app-sidebar > :not(.glass-effect),
+.app-sidebar__profile > :not(.glass-effect),
+.chat__pack-button > :not(.glass-effect),
+.chat__status > :not(.glass-effect),
+.conversation-bar__card > :not(.glass-effect),
+.mobile-menu-button > :not(.glass-effect),
+.study-pack > :not(.glass-effect) {
+  position: relative;
+  z-index: 1;
+}
+
+.app-sidebar__header,
+.app-sidebar__brand,
+.app-sidebar__primary,.app-sidebar__live-search,
+.app-sidebar__section,.app-sidebar__footer,
+.app-sidebar__profile {
+  min-width: 0;
+}
+
+.app-sidebar__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.7rem;
+  min-height: 1.5rem;
+  padding: 0 0.2rem;
+}
+
+.app-sidebar__brand,
+.app-sidebar__collapse,
+.app-sidebar__primary,
+.app-sidebar__section button,
+.app-sidebar__profile > button,
+.app-sidebar__settings button {
+  border: 0;
+  background: transparent;
+  color: inherit;
+}
+
+.app-sidebar__brand {
+  display: inline-flex;
+  align-items: center;
+  padding: 0;
+}
+
+.app-sidebar__brand strong {
+  font-family: var(--font-display);
+  font-size: 1.32rem;
+  font-weight: 850;
+  letter-spacing: 0;
+  line-height: 1;
+  white-space: nowrap;
+  color: #f7f7f4;
+}
+
+.app-sidebar__primary {
+  margin-top: 0.35rem;
+}
+
+.app-sidebar__collapse {
+  width: 2.45rem;
+  height: 2.45rem;
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(247, 247, 244, 0.72);
+  transition:
+    background-color 160ms ease,
+    transform 160ms ease;
+}
+
+.app-sidebar__collapse:hover,
+.app-sidebar__profile > button:hover {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.app-sidebar__collapse:hover {
+  transform: translateY(-1px);
+}
+
+.app-sidebar__primary {
+  width: 100%;
+}
+
+.button-019 {
+  --button-019-color: #171211;
+  --button-019-color-background: #ffffff;
+  --button-019-color-focus: #171211;
+  --button-019-focus-inset: -0.125rem;
+  --button-019-padding-top: 0.82rem;
+  --button-019-padding-x: 1rem;
+  --button-019-padding-bottom: 0.82rem;
+  --button-019-gap: 0.18rem;
+  --button-019-border-radius: 2.5rem;
+  --button-019-click-scale: 0.955 0.925;
+  --button-019-ease-click: cubic-bezier(0.4, 0, 0.2, 1);
+  --button-019-ease-hover: cubic-bezier(0.32, 0.72, 0, 1);
+  --button-019-ease-focus: cubic-bezier(0.32, 0.72, 0, 1);
+  width: 100%;
+  color: var(--button-019-color);
+  user-select: none;
+  column-gap: var(--button-019-gap);
+  row-gap: var(--button-019-gap);
+  outline-style: none;
+  padding: 0;
+  line-height: 1;
+  text-decoration: none;
+  display: inline-flex;
+  position: relative;
+  -webkit-tap-highlight-color: transparent;
+  transition: scale 0.15s var(--button-019-ease-click);
+}
+
+.button-019::after {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  inset: var(--button-019-focus-inset);
+  border-radius: var(--button-019-border-radius);
+  transition: box-shadow 0.3s var(--button-019-ease-focus);
+  pointer-events: none;
+}
+
+.button-019:active {
+  scale: var(--button-019-click-scale);
+}
+
+.button-019:focus-visible {
+  outline: 0;
+}
+
+.button-019:focus-visible::after {
+  box-shadow: 0 0 0 0.125rem var(--button-019-color-focus);
+}
+
+.button-019__text-wrap {
+  min-width: 0;
+  flex: 1 1 auto;
+  pointer-events: none;
+  display: grid;
+}
+
+.button-019__bg {
+  grid-area: 1 / 1;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  position: relative;
+  border-radius: var(--button-019-border-radius);
+  background-color: var(--button-019-color-background);
+  padding: 0;
+  box-shadow: 0 0.55rem 1.4rem rgba(23, 18, 17, 0.045);
+  transition: scale 0.4s var(--button-019-ease-hover);
+}
+
+.button-019__text-wrap .button-019__bg::after {
+  content: "";
+  grid-area: 1 / 1;
+  width: 100%;
+  height: 100%;
+  border-radius: var(--button-019-border-radius);
+  background-color: var(--button-019-color-background);
+  transition: translate 0.5s var(--button-019-ease-hover);
+}
+
+.button-019__text {
+  z-index: 1;
+  grid-area: 1 / 1;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  padding: var(--button-019-padding-top) var(--button-019-padding-x) var(--button-019-padding-bottom);
+  font-family: var(--font-display);
+  font-weight: 680;
+  letter-spacing: 0;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.button-019__icon-wrap {
+  aspect-ratio: 1;
+  flex: 0 0 auto;
+  pointer-events: none;
+  width: calc(1em + var(--button-019-padding-top) + var(--button-019-padding-bottom));
+  display: grid;
+}
+
+.button-019__icon-outer {
+  z-index: 1;
+  grid-area: 1 / 1;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.button-019__icon {
+  flex: none;
+  width: 1em;
+  height: 1em;
+  transition: rotate 0.5s var(--button-019-ease-hover);
+}
+
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .button-019:is(:hover, :focus-visible) .button-019__text-wrap .button-019__bg::after,
+  [data-hover]:is(:hover, :focus-visible) .button-019 .button-019__text-wrap .button-019__bg::after {
+    translate: calc(1em + var(--button-019-padding-top) + var(--button-019-padding-bottom) + var(--button-019-gap)) 0 0;
+    transition-delay: 0.05s;
+  }
+
+  .button-019:is(:hover, :focus-visible) .button-019__icon-wrap .button-019__bg,
+  [data-hover]:is(:hover, :focus-visible) .button-019 .button-019__icon-wrap .button-019__bg {
+    scale: 0.85;
+    transition-delay: 0.05s;
+  }
+
+  .button-019:is(:hover, :focus-visible) .button-019__icon,
+  [data-hover]:is(:hover, :focus-visible) .button-019 .button-019__icon {
+    rotate: 360deg;
+    transition-delay: 0.05s;
+  }
+}

@@ -1,0 +1,285 @@
+.button-057 {
+  --button-057-color: #171211;
+  --button-057-color-background: #ffffff;
+  --button-057-color-focus: #ffffff;
+  --button-057-padding: 1.12rem 1.65rem;
+  --button-057-border-radius: 999px;
+  --button-057-focus-inset: -0.14rem;
+  --button-057-ease-focus: cubic-bezier(0.32, 0.72, 0, 1);
+  position: relative;
+  display: inline-grid;
+  border: 0;
+  background: transparent;
+  color: var(--button-057-color);
+  padding: 0;
+  text-align: left;
+  text-decoration: none;
+  line-height: 1;
+  white-space: nowrap;
+  user-select: none;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.button-057::after {
+  content: "";
+  position: absolute;
+  inset: var(--button-057-focus-inset);
+  z-index: 1;
+  display: block;
+  border-radius: var(--button-057-border-radius);
+  pointer-events: none;
+  transition: box-shadow 0.3s var(--button-057-ease-focus);
+}
+
+.button-057:focus-visible::after {
+  box-shadow: 0 0 0 0.125rem var(--button-057-color-focus);
+}
+
+.button-057__bg {
+  grid-area: 1 / 1;
+  width: 100%;
+  height: 100%;
+  border-radius: var(--button-057-border-radius);
+  background: var(--button-057-color-background);
+  box-shadow: 0 1.2rem 3rem rgba(0, 0, 0, 0.18);
+  transition:
+    background-color 0.24s ease,
+    box-shadow 0.24s ease,
+    transform 0.24s ease;
+}
+
+.button-057__inner {
+  grid-area: 1 / 1;
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  min-height: 3.55rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--button-057-padding);
+}
+
+.button-057__text {
+  display: inline-block;
+  clip-path: inset(-10% 0);
+}
+
+.landing__cta {
+  width: fit-content;
+  font-family: var(--font-display);
+  font-size: clamp(1.08rem, 1.45vw, 1.28rem);
+  font-weight: 900;
+  font-kerning: none;
+  text-transform: lowercase;
+}
+
+.landing__cta:hover .button-057__bg {
+  transform: translateY(-1px);
+  background: #f7f1ff;
+  box-shadow: 0 1.5rem 3.5rem rgba(0, 0, 0, 0.22);
+}
+
+.button-005 {
+  --button-005-color: #171211;
+  --button-005-color-background: #ffffff;
+  --button-005-color-focus: #ffffff;
+  --button-005-text-border-radius: 2.5em;
+  --button-005-icon-border-radius: 0.1875em;
+  --button-005-padding-top: 0.82em;
+  --button-005-padding-bottom: 0.82em;
+  --button-005-padding-x: 1.08em;
+  --button-005-flex-flow: row;
+  --button-005-mirror-focus: 1;
+  --button-005-focus-inset: -0.125em;
+  --button-005-text-click-scale: 0.955 0.925;
+  --button-005-icon-click-scale: 0.925;
+  --button-005-ease-hover: cubic-bezier(0.32, 0.72, 0, 1);
+  --button-005-ease-click: cubic-bezier(0.4, 0, 0.2, 1);
+  --button-005-ease-focus: cubic-bezier(0.32, 0.72, 0, 1);
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-flow: var(--button-005-flex-flow);
+  gap: 0.0625em;
+  border: 0;
+  background: transparent;
+  color: var(--button-005-color);
+  padding: 0;
+  line-height: 1;
+  text-decoration: none;
+  user-select: none;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.button-005::after {
+  content: "";
+  position: absolute;
+  inset: var(--button-005-focus-inset);
+  z-index: 1;
+  display: block;
+  border-radius:
+    var(--button-005-text-border-radius)
+    var(--button-005-icon-border-radius)
+    var(--button-005-icon-border-radius)
+    var(--button-005-text-border-radius);
+  pointer-events: none;
+  scale: var(--button-005-mirror-focus) 1;
+  transition: box-shadow 0.3s var(--button-005-ease-focus);
+}
+
+.button-005:focus-visible::after {
+  box-shadow: 0 0 0 0.125em var(--button-005-color-focus);
+}
+
+.button-005__text-wrap,
+.button-005__icon-wrap {
+  pointer-events: none;
+  display: grid;
+  perspective: 10em;
+  transform-style: preserve-3d;
+  transition: scale 0.15s var(--button-005-ease-click);
+}
+
+.button-005:active .button-005__text-wrap {
+  scale: var(--button-005-text-click-scale);
+}
+
+.button-005:active .button-005__icon-wrap {
+  scale: var(--button-005-icon-click-scale);
+}
+
+.button-005__text,
+.button-005__icon-inner {
+  grid-area: 1 / 1;
+  background: var(--button-005-color-background);
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+}
+
+.button-005__text {
+  border-radius: var(--button-005-text-border-radius);
+  padding:
+    var(--button-005-padding-top)
+    var(--button-005-padding-x)
+    var(--button-005-padding-bottom);
+}
+
+.button-005__icon-wrap {
+  width: calc(1em + var(--button-005-padding-top) + var(--button-005-padding-bottom));
+  aspect-ratio: 1;
+  flex-shrink: 0;
+}
+
+.button-005__icon-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--button-005-icon-border-radius);
+}
+
+.button-005__icon {
+  width: 1em;
+  height: 1em;
+}
+
+.button-005__text.is--default {
+  opacity: 1;
+  transform-origin: center top;
+  transition:
+    translate 0.4s 0.05s var(--button-005-ease-hover),
+    rotate 0.4s 0.05s var(--button-005-ease-hover),
+    scale 0.4s 0.05s var(--button-005-ease-hover),
+    opacity 0.1s 0.05s linear;
+}
+
+.button-005__text.is--hover {
+  translate: 0 15% 0;
+  rotate: 1 0 0 -85deg;
+  scale: 0.55;
+  opacity: 0;
+  transform-origin: center bottom;
+  transition:
+    translate 0.4s var(--button-005-ease-hover),
+    rotate 0.4s var(--button-005-ease-hover),
+    scale 0.4s var(--button-005-ease-hover),
+    opacity 0.1s 0.075s linear;
+}
+
+.button-005__icon-inner.is--default {
+  translate: 0 0 0;
+  rotate: 1 0 0 0deg;
+  scale: 1;
+  opacity: 1;
+  transform-origin: center bottom;
+  transition:
+    translate 0.5s 0.05s var(--button-005-ease-hover),
+    rotate 0.55s 0.05s var(--button-005-ease-hover),
+    scale 0.55s 0.05s var(--button-005-ease-hover),
+    opacity 0.1s 0.15s linear;
+}
+
+.button-005__icon-inner.is--hover {
+  translate: 0 -15% 0;
+  rotate: 1 0 0 85deg;
+  scale: 0.55;
+  opacity: 0;
+  transform-origin: center top;
+  transition:
+    translate 0.4s var(--button-005-ease-hover),
+    rotate 0.4s var(--button-005-ease-hover),
+    scale 0.4s var(--button-005-ease-hover),
+    opacity 0.1s 0.075s linear;
+}
+
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .button-005:is(:hover, :focus-visible) .button-005__text.is--default,
+  [data-hover]:is(:hover, :focus-visible) .button-005 .button-005__text.is--default {
+    translate: 0 -15% 0;
+    rotate: 1 0 0 85deg;
+    scale: 0.55;
+    opacity: 0;
+    transition:
+      translate 0.5s 0.05s var(--button-005-ease-hover),
+      rotate 0.55s 0.05s var(--button-005-ease-hover),
+      scale 0.55s 0.05s var(--button-005-ease-hover),
+      opacity 0.1s 0.15s linear;
+  }
+
+  .button-005:is(:hover, :focus-visible) .button-005__text.is--hover,
+  [data-hover]:is(:hover, :focus-visible) .button-005 .button-005__text.is--hover {
+    translate: 0 0 0;
+    rotate: 1 0 0 0deg;
+    scale: 1;
+    opacity: 1;
+    transition:
+      translate 0.5s 0.1s var(--button-005-ease-hover),
+      rotate 0.55s 0.1s var(--button-005-ease-hover),
+      scale 0.55s 0.1s var(--button-005-ease-hover),
+      opacity 0.1s 0.075s linear;
+  }
+
+  .button-005:is(:hover, :focus-visible) .button-005__icon-inner.is--default,
+  [data-hover]:is(:hover, :focus-visible) .button-005 .button-005__icon-inner.is--default {
+    translate: 0 -15% 0;
+    rotate: 1 0 0 85deg;
+    scale: 0.55;
+    opacity: 0;
+  }
+
+  .button-005:is(:hover, :focus-visible) .button-005__icon-inner.is--hover,
+  [data-hover]:is(:hover, :focus-visible) .button-005 .button-005__icon-inner.is--hover {
+    translate: 0 0 0;
+    rotate: 1 0 0 0deg;
+    scale: 1;
+    opacity: 1;
+    transition:
+      translate 0.5s 0.1s var(--button-005-ease-hover),
+      rotate 0.55s 0.1s var(--button-005-ease-hover),
+      scale 0.55s 0.1s var(--button-005-ease-hover),
+      opacity 0.1s 0.075s linear;
+  }
+}

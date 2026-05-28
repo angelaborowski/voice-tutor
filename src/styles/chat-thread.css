@@ -1,0 +1,356 @@
+.thread-shell {
+  position: relative;
+  z-index: 1;
+  box-sizing: border-box;
+  width: min(100% - 1.5rem, 46rem);
+  min-height: 0;
+  justify-self: center;
+  display: flex;
+  flex-direction: column;
+  align-self: stretch;
+  padding: 0;
+}
+
+.thread-shell--fresh {
+  width: min(100% - 1.5rem, 38rem);
+  padding-block: 0;
+}
+
+.thread {
+  position: relative;
+  min-height: 0;
+  flex: 1;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(23, 18, 17, 0.12) transparent;
+}
+
+.thread-shell:not(.thread-shell--fresh) .thread {
+  position: absolute;
+  top: clamp(6.8rem, 12vh, 8.2rem);
+  right: 0;
+  bottom: clamp(1.2rem, 3vh, 2rem);
+  left: 0;
+  margin: 0;
+  border: 1px solid transparent;
+  border-radius: 1.25rem;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+  overflow: hidden;
+  scrollbar-gutter: stable;
+}
+
+.thread-shell:not(.thread-shell--fresh) .thread > div {
+  border-radius: inherit;
+  overscroll-behavior: contain;
+  scrollbar-color: rgba(23, 18, 17, 0.14) transparent;
+  scrollbar-width: thin;
+}
+
+.thread-shell:not(.thread-shell--fresh) .thread > div::-webkit-scrollbar {
+  width: 0.42rem;
+}
+
+.thread-shell:not(.thread-shell--fresh) .thread > div::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.thread-shell:not(.thread-shell--fresh) .thread > div::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(23, 18, 17, 0.14);
+}
+
+.thread-shell--fresh .thread {
+  overflow: visible;
+  scrollbar-width: none;
+}
+
+.thread-shell--fresh .thread::-webkit-scrollbar {
+  display: none;
+}
+
+.thread__content {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.16rem;
+  padding: 0.9rem 0.78rem 1rem;
+}
+
+.thread-shell--fresh .thread__content {
+  --fresh-thread-safe-top: clamp(4.6rem, 10svh, 6.5rem);
+  --fresh-thread-safe-bottom: clamp(1.15rem, 4svh, 2.6rem);
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  padding: var(--fresh-thread-safe-top) 0 var(--fresh-thread-safe-bottom);
+}
+
+.thread__orb-state {
+  display: grid;
+  justify-items: center;
+  gap: 0.58rem;
+  margin: 0.05rem 0 0.62rem;
+}
+
+.thread-shell:not(.thread-shell--fresh) > .thread__orb-state {
+  position: absolute;
+  z-index: 4;
+  top: clamp(0.7rem, 1.8vh, 1.05rem);
+  right: 0;
+  left: 0;
+  pointer-events: none;
+  margin: 0;
+}
+
+.thread__orb {
+  width: clamp(6.3rem, 9vw, 7.4rem);
+  height: clamp(6.3rem, 9vw, 7.4rem);
+  aspect-ratio: 1;
+  align-self: center;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #f1f1ef;
+  box-shadow:
+    inset 0 2px 8px rgba(23, 18, 17, 0.08),
+    0 1.4rem 3.4rem rgba(23, 18, 17, 0.08);
+  transition:
+    box-shadow 220ms ease,
+    transform 220ms ease,
+    opacity 220ms ease;
+}
+
+.thread-shell--fresh .thread__orb {
+  width: clamp(7.7rem, 12vw, 9.1rem);
+  height: clamp(7.7rem, 12vw, 9.1rem);
+}
+
+.thread__orb-state.is-idle .thread__orb {
+  opacity: 0.92;
+  transform: scale(1);
+}
+
+.thread__orb-state.is-listening .thread__orb {
+  box-shadow:
+    inset 0 2px 8px rgba(23, 18, 17, 0.08),
+    0 1.4rem 3.4rem rgba(23, 18, 17, 0.08),
+    0 0 0 0.55rem rgba(44, 191, 109, 0.08);
+}
+
+.thread__orb-state.is-thinking .thread__orb {
+  animation: orb-thinking 1.4s ease-in-out infinite;
+  box-shadow:
+    inset 0 2px 8px rgba(23, 18, 17, 0.08),
+    0 1.4rem 3.4rem rgba(23, 18, 17, 0.1),
+    0 0 0 0.65rem rgba(23, 18, 17, 0.045);
+}
+
+.thread__orb-state.is-talking .thread__orb {
+  transform: scale(1.05);
+  box-shadow:
+    inset 0 2px 8px rgba(23, 18, 17, 0.08),
+    0 1.4rem 3.4rem rgba(23, 18, 17, 0.1),
+    0 0 0 0.7rem rgba(247, 159, 142, 0.13);
+}
+
+.thread__orb-canvas {
+  --orb-color-a: #8be4c2;
+  --orb-color-b: #f0b98a;
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: hidden;
+  border-radius: inherit;
+  background:
+    conic-gradient(from 18deg, #ffffff 0 12%, var(--orb-color-a) 18% 34%, var(--orb-color-b) 46% 64%, var(--orb-color-a) 74% 88%, #ffffff 92% 100%);
+}
+
+.thread__orb-canvas canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+  border-radius: inherit;
+}
+
+.thread__welcome {
+  width: 100%;
+  display: grid;
+  justify-items: center;
+  gap: 0.52rem;
+  margin-inline: auto;
+  text-align: center;
+}
+
+.thread__welcome p {
+  max-width: 34rem;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.9);
+  cursor: default;
+  font-size: clamp(1.35rem, 2.2vw, 1.95rem);
+  font-weight: var(--studio-weight-copy);
+  line-height: 1.18;
+  text-align: center;
+  transition:
+    color 180ms ease,
+    text-shadow 180ms ease,
+    transform 180ms ease;
+  text-wrap: balance;
+}
+
+.thread__welcome p:hover {
+  color: #ffffff;
+  text-shadow: 0 0.95rem 2.8rem rgba(255, 255, 255, 0.24);
+  transform: translateY(-1px);
+}
+
+.thread__welcome-word,
+.thread__welcome-char {
+  display: inline-block;
+}
+
+.thread__message {
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  padding: 0.12rem 0;
+}
+
+.thread__message--student {
+  justify-content: flex-end;
+}
+
+.thread__bubble {
+  width: fit-content;
+  max-width: min(78%, 42rem);
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  border: 1px solid rgba(23, 18, 17, 0.1);
+  border-radius: 1rem;
+  background: #ffffff;
+  color: #171211;
+  padding: 0.62rem 0.78rem;
+}
+
+.thread__message--student .thread__bubble {
+  border-color: rgba(23, 18, 17, 0.075);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.82), rgba(241, 241, 239, 0.94)),
+    #f1f1ef;
+  box-shadow: 0 0.45rem 1.2rem rgba(23, 18, 17, 0.035);
+}
+
+.thread__message--tutor .thread__bubble {
+  border-color: transparent;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.86);
+  box-shadow: none;
+}
+
+.thread__message--tutor .thread__bubble span,
+.thread__message--tutor .thread__bubble time {
+  color: rgba(255, 255, 255, 0.46);
+}
+
+.thread__bubble span {
+  display: flex;
+  align-items: center;
+  gap: 0.42rem;
+  color: rgba(23, 18, 17, 0.5);
+  font-size: 0.68rem;
+  font-weight: var(--studio-weight-label);
+}
+
+.thread__message--student .thread__bubble span {
+  justify-content: flex-end;
+}
+
+.thread__bubble time {
+  color: rgba(23, 18, 17, 0.34);
+  font-size: 0.66rem;
+  font-weight: 500;
+}
+
+.thread__bubble p {
+  margin: 0;
+  color: inherit;
+  font-size: 1rem;
+  line-height: 1.4;
+  white-space: pre-wrap;
+}
+
+.thread__response {
+  color: inherit;
+  font-size: 0.97rem;
+  line-height: 1.38;
+  white-space: pre-wrap;
+}
+
+.thread__response > * {
+  margin: 0;
+}
+
+.thread__response > * + * {
+  margin-top: 0.65rem;
+}
+
+.thread__response .katex {
+  font-size: 1.02em;
+}
+
+.thread__response .katex-display {
+  max-width: 100%;
+  margin: 0.45rem 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.1rem 0 0.2rem;
+}
+
+.thread__response .katex-display > .katex {
+  display: inline-block;
+  min-width: max-content;
+}
+
+.thread__thinking {
+  min-height: 1.5rem;
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid rgba(23, 18, 17, 0.08);
+  border-radius: 999px;
+  background: rgba(23, 18, 17, 0.035);
+  color: rgba(23, 18, 17, 0.46);
+  padding: 0.36rem 0.64rem;
+  font-size: 0.9rem;
+  font-weight: var(--studio-weight-label);
+  line-height: 1.4;
+}
+
+.thread__scroll {
+  position: absolute;
+  bottom: 1rem;
+}
+
+@keyframes orb-thinking {
+  0%,
+  100% {
+    transform: scale(0.98);
+  }
+
+  50% {
+    transform: scale(1.04);
+  }
+}
+
+@keyframes studio-breathe {
+  0% {
+    transform: translate3d(calc(var(--studio-ambient-motion) * -0.35), calc(var(--studio-ambient-motion) * 0.2), 0) scale(1);
+  }
+
+  100% {
+    transform: translate3d(var(--studio-ambient-motion), calc(var(--studio-ambient-motion) * -0.55), 0) scale(1.04);
+  }
+}

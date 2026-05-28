@@ -1,0 +1,77 @@
+@property --landing-orb-a {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #ffffff;
+}
+
+@property --landing-orb-b {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #7a7482;
+}
+
+.landing {
+  --landing-orb-a: #ffffff;
+  --landing-orb-b: #7a7482;
+  position: relative;
+  min-height: 100vh;
+  overflow-x: hidden;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 0;
+  background: #020106;
+  color: #ffffff;
+  padding: clamp(1rem, 2vw, 1.6rem);
+  transition:
+    --landing-orb-a 4s ease,
+    --landing-orb-b 4s ease;
+}
+
+.landing::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    radial-gradient(circle at 36% 46%, color-mix(in srgb, var(--landing-orb-a) 28%, transparent), transparent 22rem),
+    radial-gradient(circle at 69% 28%, color-mix(in srgb, var(--landing-orb-b) 25%, transparent), transparent 28rem),
+    radial-gradient(circle at 86% 78%, color-mix(in srgb, var(--landing-orb-a) 14%, transparent), transparent 24rem);
+  opacity: 0.78;
+  mix-blend-mode: screen;
+  pointer-events: none;
+  transition: opacity 2.4s ease;
+}
+
+.landing::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    radial-gradient(ellipse at 42% 44%, transparent 0 17rem, rgba(2, 1, 6, 0.08) 28rem, rgba(2, 1, 6, 0.58) 60rem),
+    linear-gradient(90deg, rgba(2, 1, 6, 0.72) 0%, rgba(2, 1, 6, 0.08) 34%, rgba(2, 1, 6, 0.06) 62%, rgba(2, 1, 6, 0.58) 100%),
+    linear-gradient(180deg, rgba(2, 1, 6, 0.42) 0%, rgba(2, 1, 6, 0.01) 28%, rgba(2, 1, 6, 0.06) 64%, rgba(2, 1, 6, 0.72) 100%);
+  pointer-events: none;
+}
+
+.landing__veil,
+.landing__veil-fallback {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.landing__veil {
+  opacity: 1;
+  mix-blend-mode: normal;
+  filter: none;
+}
+
+.landing__veil-fallback {
+  opacity: 1;
+  background:
+    radial-gradient(circle at 43% 47%, rgba(255, 255, 255, 0.08), transparent 14rem),
+    radial-gradient(circle at 72% 26%, rgba(177, 112, 255, 0.16), transparent 26rem),
+    #020106;
+}

@@ -1,0 +1,8 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="64" height="64" rx="14" fill="#FAFAF8"/>
+  <path
+    d="M30 0V250Q30 285 41 310Q52 335 73 359L223 507Q247 528 272 539Q297 550 332 550H870V300Q870 265 859 240Q848 215 827 191L677 43Q653 22 628 11Q603 0 568 0ZM750 440H224Q194 440 172 419Q150 398 150 368V110H676Q706 110 728 131Q750 152 750 182Z"
+    fill="#151313"
+    transform="translate(6.286 47.7) scale(0.057142 -0.057142)"
+  />
+</svg>

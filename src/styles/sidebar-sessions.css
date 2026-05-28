@@ -1,0 +1,215 @@
+.app-sidebar__live-search {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.live-search__search {
+  display: flex;
+  align-items: center;
+}
+
+.live-search__search-field {
+  position: relative;
+  width: 100%;
+  height: 2.72rem;
+  display: flex;
+  align-items: center;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.09);
+  color: rgba(247, 247, 244, 0.72);
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.live-search__search-field:has(input:focus) {
+  border-color: rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.13);
+  box-shadow: 0 0.65rem 1.4rem rgba(0, 0, 0, 0.12);
+}
+
+.live-search__search-icon {
+  position: absolute;
+  left: 0.8rem;
+  z-index: 1;
+  width: 1.2rem;
+  height: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--studio-accent);
+  pointer-events: none;
+  user-select: none;
+}
+
+.live-search__search-input {
+  appearance: none;
+  min-width: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #f7f7f4;
+  padding: 0 3.05rem 0 2.5rem;
+  font: inherit;
+  font-size: 0.86rem;
+  font-weight: var(--studio-weight-copy);
+  letter-spacing: 0;
+}
+
+.live-search__search-input::placeholder {
+  color: rgba(247, 247, 244, 0.46);
+  opacity: 1;
+}
+
+.live-search__clear {
+  position: absolute;
+  right: 0.36rem;
+  z-index: 2;
+  min-height: 1.72rem;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  color: rgba(247, 247, 244, 0.72);
+  padding: 0 0.5rem;
+  font-size: 0.66rem;
+  font-weight: var(--studio-weight-label);
+}
+
+.live-search__clear:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.live-search__data {
+  display: none;
+}
+
+.live-search__not-found {
+  display: block;
+}
+
+.live-search__not-found-p {
+  margin: 0;
+  color: rgba(247, 247, 244, 0.52);
+  padding: 0.75rem;
+  font-size: 0.82rem;
+  text-align: center;
+}
+
+.app-sidebar__section {
+  min-height: 0;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 0.28rem;
+}
+
+.app-sidebar__section h2 {
+  margin: 0.1rem 0 0;
+  padding: 0 0.4rem;
+  color: rgba(247, 247, 244, 0.48);
+  font-size: 0.68rem;
+  font-weight: var(--studio-weight-label);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.app-sidebar__sessions {
+  min-height: 0;
+  display: grid;
+  align-content: start;
+  gap: 0.15rem;
+  overflow: hidden auto;
+  padding-right: 0.1rem;
+}
+
+.app-sidebar__sessions article {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 1.8rem;
+  align-items: center;
+  border: 1px solid transparent;
+  border-radius: 0.76rem;
+  transition:
+    border-color 160ms ease,
+    background-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.app-sidebar__sessions article.is-active {
+  border-color: var(--studio-border);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 0.55rem 1.4rem rgba(0, 0, 0, 0.12);
+}
+
+.app-sidebar__sessions article > button:first-child {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 1.22rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.45rem;
+  text-align: left;
+}
+
+.app-sidebar__chat-icon {
+  width: 1.22rem;
+  height: 1.22rem;
+  display: block;
+  opacity: 0.72;
+}
+
+.app-sidebar__bin-icon {
+  width: 1rem;
+  height: 1rem;
+  display: block;
+  opacity: 0.72;
+}
+
+.app-sidebar__sessions span {
+  min-width: 0;
+  display: grid;
+}
+
+.app-sidebar__sessions strong,
+.app-sidebar__sessions small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app-sidebar__sessions strong {
+  font-size: 0.8rem;
+  font-weight: var(--studio-weight-strong);
+}
+
+.app-sidebar__sessions small {
+  color: rgba(247, 247, 244, 0.52);
+  font-size: 0.68rem;
+}
+
+.app-sidebar__sessions > p {
+  margin: 0;
+  color: rgba(247, 247, 244, 0.5);
+  padding: 0.75rem;
+  font-size: 0.82rem;
+  text-align: center;
+}
+
+.app-sidebar__delete {
+  width: 1.7rem;
+  height: 1.7rem;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  color: rgba(247, 247, 244, 0.5);
+}
+
+.app-sidebar__delete:hover {
+  background: rgba(190, 49, 49, 0.08);
+  color: #9d2929;
+}

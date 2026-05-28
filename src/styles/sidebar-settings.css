@@ -1,0 +1,193 @@
+.app-sidebar__footer {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.app-sidebar__profile {
+  position: relative;
+  display: grid;
+  grid-template-columns: 2.2rem minmax(0, 1fr) 2rem;
+  align-items: center;
+  gap: 0.58rem;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 0.78rem;
+  background: rgba(255, 255, 255, 0.08);
+  padding: 0.48rem;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    0 0.55rem 1.4rem rgba(0, 0, 0, 0.16);
+}
+
+.app-sidebar__settings-card {
+  grid-template-columns: 1fr;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.app-sidebar__settings-card.is-open {
+  max-height: min(22rem, calc(100vh - 9rem));
+  align-self: end;
+  gap: 0.66rem;
+  overflow: hidden auto;
+  border-color: rgba(255, 255, 255, 0.2);
+  background: #3a3636;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.16),
+    0 1rem 2.5rem rgba(0, 0, 0, 0.24);
+}
+
+.app-sidebar__settings-toggle {
+  width: 100%;
+  min-height: 2.65rem;
+  display: grid;
+  grid-template-columns: 1.35rem minmax(0, 1fr);
+  align-items: center;
+  gap: 0.58rem;
+  border-radius: 0.62rem;
+  padding: 0 0.2rem;
+  text-align: left;
+}
+
+.app-sidebar__settings-card.is-open .app-sidebar__settings-toggle {
+  min-height: 2.55rem;
+  align-items: start;
+  padding: 0.12rem 0.12rem 0.2rem;
+}
+
+.app-sidebar__settings-card.is-open .app-sidebar__settings-toggle span {
+  display: grid;
+  gap: 0.12rem;
+}
+
+.app-sidebar__settings-card.is-open .app-sidebar__settings-toggle strong,
+.app-sidebar__settings-card.is-open .app-sidebar__settings-toggle small {
+  line-height: 1.12;
+}
+
+.app-sidebar__profile > span {
+  width: 2.2rem;
+  height: 2.2rem;
+  display: grid;
+  place-items: center;
+  border-radius: 0.7rem;
+  background: linear-gradient(135deg, rgba(201, 246, 227, 0.9), rgba(247, 231, 215, 0.9));
+  font-weight: var(--studio-weight-strong);
+}
+
+.app-sidebar__profile strong,
+.app-sidebar__profile small,
+.app-sidebar__settings-toggle span {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app-sidebar__profile strong {
+  font-size: 0.84rem;
+  font-weight: var(--studio-weight-strong);
+}
+
+.app-sidebar__profile small {
+  color: rgba(247, 247, 244, 0.54);
+  font-size: 0.7rem;
+}
+
+.app-sidebar__profile > button {
+  width: 2rem;
+  height: 2rem;
+  display: grid;
+  place-items: center;
+  border-radius: 0.62rem;
+}
+
+.app-sidebar__settings-card > .app-sidebar__settings-toggle {
+  width: 100%;
+  height: auto;
+  place-items: initial;
+}
+
+.app-sidebar__settings {
+  grid-column: 1 / -1;
+  display: grid;
+  gap: 0.74rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  padding-top: 0.72rem;
+}
+
+.app-sidebar__settings label,
+.app-sidebar__settings > div {
+  display: grid;
+  gap: 0.34rem;
+}
+
+.app-sidebar__settings label > span,
+.app-sidebar__settings > div > span {
+  color: rgba(247, 247, 244, 0.52);
+  font-size: 0.68rem;
+  font-weight: var(--studio-weight-label);
+  text-transform: uppercase;
+}
+
+.app-sidebar__settings input {
+  min-height: 2.34rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 0.62rem;
+  background: rgba(255, 255, 255, 0.12);
+  color: #f7f7f4;
+  padding: 0 0.66rem;
+  font: inherit;
+}
+
+.app-sidebar__settings input:focus {
+  outline: 0;
+  border-color: rgba(139, 228, 194, 0.5);
+  box-shadow: 0 0 0 0.18rem rgba(139, 228, 194, 0.12);
+}
+
+.app-sidebar__segments,
+.app-sidebar__backdrops {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.36rem;
+}
+
+.app-sidebar__segments button,
+.app-sidebar__backdrops button {
+  min-height: 2.08rem;
+  display: grid;
+  grid-template-columns: 0.72rem minmax(0, 1fr);
+  align-items: center;
+  gap: 0.35rem;
+  border: 1px solid transparent;
+  border-radius: 0.56rem;
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(247, 247, 244, 0.68);
+  padding: 0 0.5rem;
+  font-size: 0.7rem;
+  font-weight: var(--studio-weight-label);
+  text-align: left;
+}
+
+.app-sidebar__segments button:hover,
+.app-sidebar__backdrops button:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.app-sidebar__segments button.is-active,
+.app-sidebar__backdrops button.is-active {
+  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.16);
+  color: #ffffff;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14);
+}
+
+.app-sidebar__segments i,
+.app-sidebar__backdrops i {
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 999px;
+}

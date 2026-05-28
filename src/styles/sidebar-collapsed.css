@@ -1,0 +1,82 @@
+.workspace.is-sidebar-collapsed {
+  grid-template-columns: 7rem minmax(0, 1fr);
+}
+
+.workspace.is-sidebar-collapsed .app-sidebar {
+  justify-items: center;
+  width: 4.45rem;
+  padding: 0.64rem;
+}
+
+.workspace.is-sidebar-collapsed .app-sidebar__header,
+.workspace.is-sidebar-collapsed .app-sidebar__primary,
+.workspace.is-sidebar-collapsed .app-sidebar__profile {
+  width: 2.85rem;
+}
+
+.workspace.is-sidebar-collapsed .app-sidebar__brand strong,
+.workspace.is-sidebar-collapsed .app-sidebar__brand,
+.workspace.is-sidebar-collapsed .app-sidebar__primary .button-019__text-wrap,
+.workspace.is-sidebar-collapsed .app-sidebar__live-search,
+.workspace.is-sidebar-collapsed .app-sidebar__section,
+.workspace.is-sidebar-collapsed .app-sidebar__profile div,
+.workspace.is-sidebar-collapsed .app-sidebar__profile > button,
+.workspace.is-sidebar-collapsed .app-sidebar__settings {
+  display: none;
+}
+
+.workspace.is-sidebar-collapsed .app-sidebar__header {
+  grid-template-columns: 1fr;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.workspace.is-sidebar-collapsed .app-sidebar__collapse {
+  width: 2.85rem;
+  height: 2.85rem;
+}
+
+.workspace.is-sidebar-collapsed .app-sidebar__primary,
+.workspace.is-sidebar-collapsed .app-sidebar__profile {
+  display: grid;
+  place-items: center;
+  padding: 0;
+}
+
+.workspace.is-sidebar-collapsed .app-sidebar__primary {
+  --button-019-padding-top: 0.82rem;
+  --button-019-padding-x: 0;
+  --button-019-padding-bottom: 0.82rem;
+  --button-019-gap: 0;
+}
+
+.workspace.is-sidebar-collapsed .button-019__icon-wrap {
+  width: 2.85rem;
+}
+
+.workspace.is-sidebar-collapsed .button-019__icon {
+  width: 1.05rem;
+  height: 1.05rem;
+  rotate: none;
+}
+
+.workspace.is-sidebar-collapsed .app-sidebar__profile {
+  grid-template-columns: 1fr;
+  background: transparent;
+  box-shadow: none;
+}
+
+
+.workspace.is-sidebar-collapsed .app-sidebar__profile > span {
+  width: 2.3rem;
+  height: 2.3rem;
+}
+
+.workspace.is-sidebar-collapsed .app-sidebar__collapse,
+.workspace.is-sidebar-collapsed .button-019__bg {
+  border-color: rgba(255, 255, 255, 0.12);
+  background-color: rgba(255, 255, 255, 0.1);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    0 0.6rem 1.4rem rgba(0, 0, 0, 0.16);
+}

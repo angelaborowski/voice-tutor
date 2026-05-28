@@ -1,0 +1,285 @@
+.landing__mode-flick {
+  grid-column: 2;
+  width: min(100%, 40rem);
+  justify-self: start;
+  margin-top: clamp(0.4rem, 1.5vw, 1rem);
+}
+
+.flick-group {
+  position: relative;
+  cursor: grab;
+}
+
+.flick-group[data-flick-drag-status="grabbing"] {
+  cursor: grabbing;
+}
+
+.flick-group__relative-object {
+  width: min(100%, 37rem);
+  opacity: 0;
+  pointer-events: none;
+  position: relative;
+}
+
+.flick-group__relative-object-before {
+  padding-top: 58%;
+}
+
+.flick-group__collection {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  inset: 0;
+}
+
+.flick-group__list {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.flick-group__item {
+  position: absolute;
+}
+
+.flick-card {
+  width: clamp(13.8rem, 28vw, 17.5rem);
+  color: #fff;
+  user-select: none;
+  border-radius: 0.8rem;
+  background: rgba(8, 6, 14, 0.92);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  box-shadow:
+    0 1.3rem 3rem rgba(0, 0, 0, 0.36),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+}
+
+.flick-card__before {
+  padding-top: 128%;
+}
+
+.flick-card__media {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  inset: 0;
+  transition: opacity 0.2s ease;
+  opacity: 0.5;
+}
+
+.landing__mode-card {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-rows: auto 1fr auto auto;
+  align-items: center;
+  justify-items: center;
+  gap: 0.8rem;
+  color: inherit;
+  cursor: grab;
+  user-select: none;
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: inherit;
+  background:
+    radial-gradient(circle at 50% 38%, rgba(255, 255, 255, 0.16), transparent 8.5rem),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.025)),
+    rgba(8, 6, 14, 0.92);
+  padding: 1.1rem;
+  overflow: hidden;
+  touch-action: pan-y;
+}
+
+.landing__mode-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+  background-size: 3.5rem 3.5rem;
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+.landing__mode-card::after {
+  content: "";
+  position: absolute;
+  inset: auto 1rem 1rem;
+  height: 3.6rem;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.28);
+  filter: blur(18px);
+  pointer-events: none;
+}
+
+.landing__mode-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+.landing__mode-card-signal {
+  justify-self: start;
+  color: #d8ccff;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.landing__mode-card-orb {
+  width: min(68%, 8.8rem);
+  aspect-ratio: 1;
+  filter:
+    drop-shadow(0 0 1rem rgba(255, 255, 255, 0.2))
+    drop-shadow(0 0 2.5rem rgba(216, 204, 255, 0.2));
+}
+
+.landing__mode-card strong {
+  width: 100%;
+  color: #ffffff;
+  font-family: var(--font-display);
+  font-size: clamp(1.7rem, 4vw, 2.55rem);
+  font-weight: 900;
+  letter-spacing: 0;
+  line-height: 0.9;
+  text-align: center;
+}
+
+.landing__mode-card p {
+  max-width: 14rem;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.74);
+  font-size: 0.86rem;
+  line-height: 1.35;
+  text-align: center;
+}
+
+[data-flick-cards-item-status] {
+  pointer-events: none;
+}
+
+[data-flick-cards-item-status="active"] {
+  pointer-events: auto;
+}
+
+[data-flick-cards-dragger] {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: auto;
+  touch-action: pan-y;
+}
+
+[data-flick-cards-item-status="2-before"] .flick-card__media,
+[data-flick-cards-item-status="2-after"] .flick-card__media {
+  opacity: 0.75;
+}
+
+[data-flick-cards-item-status="active"] .flick-card__media {
+  opacity: 1;
+}
+
+[data-flick-cards-item-status] .landing__mode-card p {
+  transition:
+    opacity 0.4s cubic-bezier(0.625, 0.05, 0, 1),
+    transform 1s cubic-bezier(0.16, 1, 0.3, 1);
+  opacity: 0;
+  transform: translateY(50%) rotate(0.001deg);
+}
+
+[data-flick-cards-item-status="active"] .landing__mode-card p {
+  opacity: 1;
+  transform: translateY(0%) rotate(0.001deg);
+}
+
+.landing__insight-grid article,
+.landing__mode-grid article,
+.landing__mode-grid button,
+.landing__pack-grid article {
+  min-height: 9rem;
+  display: grid;
+  align-content: space-between;
+  gap: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 0.5rem;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03)),
+    rgba(255, 255, 255, 0.04);
+  padding: 1rem;
+  box-shadow: 0 1.4rem 4rem rgba(0, 0, 0, 0.18);
+  backdrop-filter: blur(16px);
+}
+
+.landing__mode-grid button {
+  color: inherit;
+  cursor: pointer;
+  text-align: left;
+  transition:
+    border-color 0.24s ease,
+    background 0.24s ease,
+    transform 0.24s ease;
+}
+
+.landing__mode-grid button span {
+  color: #d8ccff;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.landing__mode-grid button:hover,
+.landing__mode-grid button.is-active {
+  transform: translateY(-2px);
+  border-color: rgba(216, 204, 255, 0.52);
+  background:
+    linear-gradient(180deg, rgba(216, 204, 255, 0.18), rgba(255, 255, 255, 0.05)),
+    rgba(255, 255, 255, 0.07);
+}
+
+.landing__insight-grid span,
+.landing__mode-grid strong,
+.landing__pack-grid strong {
+  color: #ffffff;
+  font-family: var(--font-display);
+  font-size: clamp(1rem, 1.5vw, 1.34rem);
+  font-weight: 900;
+  letter-spacing: 0;
+  line-height: 1;
+  overflow-wrap: anywhere;
+}
+
+.landing__mode-grid strong {
+  overflow-wrap: normal;
+  word-break: normal;
+}
+
+.landing__insight-grid span {
+  color: #d8ccff;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  letter-spacing: 0.08em;
+}
+
+.landing__insight-grid p,
+.landing__mode-grid p,
+.landing__pack-grid p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.74);
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
