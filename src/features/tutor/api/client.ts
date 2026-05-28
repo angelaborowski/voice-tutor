@@ -90,17 +90,3 @@ export async function getVoiceToken(): Promise<string> {
 
   return data.token;
 }
-
-export async function getVoiceSignedUrl(): Promise<string> {
-  const response = await fetch("/api/signed-url");
-  if (!response.ok) {
-    throw new Error(`Voice signed URL request failed (${response.status})`);
-  }
-
-  const data = (await response.json()) as { signedUrl?: string };
-  if (!data.signedUrl) {
-    throw new Error("Voice signed URL response did not include a URL.");
-  }
-
-  return data.signedUrl;
-}

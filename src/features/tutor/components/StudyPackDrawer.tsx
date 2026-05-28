@@ -69,9 +69,7 @@ export function StudyPackDrawer({
   const quizAnsweredCount = Object.keys(quizMarks).length;
   const quizCorrectCount = Object.values(quizMarks).filter(Boolean).length;
   const isQuizComplete = quizItems.length > 0 && quizAnsweredCount === quizItems.length;
-  const modelAnswerSentences = note ? splitSentences(note.modelAnswer) : [];
-  const modelAnswerLead = modelAnswerSentences[0] ?? note?.modelAnswer ?? "";
-  const modelAnswerSteps = modelAnswerSentences.slice(1, 5);
+  const summaryPoints = note ? splitSentences(note.summary) : [];
 
   useEffect(() => {
     setActiveCardIndex(0);
@@ -178,12 +176,16 @@ export function StudyPackDrawer({
                 </header>
 
                 <div className="study-pack-note__block study-pack-note__block--summary">
-                  <h3>In this chat</h3>
-                  <p className="study-pack-note__lead">{note.summary}</p>
+                  <h3>Summary notes</h3>
+                  <ul className="study-pack-note__summary-list">
+                    {(summaryPoints.length ? summaryPoints : [note.summary]).map((point) => (
+                      <li key={point}>{point}</li>
+                    ))}
+                  </ul>
                 </div>
 
                 <div className="study-pack-note__block">
-                  <h3>What you need to remember</h3>
+                  <h3>Key points</h3>
                   <ol className="study-pack-note__points">
                     {note.covered.map((item, index) => (
                       <li key={item}>
@@ -205,39 +207,6 @@ export function StudyPackDrawer({
                   </div>
                 )}
 
-                <div className="study-pack-note__block">
-                  <h3>Summary answer</h3>
-                  <div className="study-pack-note__answer">
-                    <p>{modelAnswerLead}</p>
-                    {modelAnswerSteps.length > 0 && (
-                      <ul className="study-pack-note__answer-points">
-                        {modelAnswerSteps.map((sentence) => (
-                          <li key={sentence}>{sentence}</li>
-                        ))}
-                      </ul>
-                    )}
-                  </div>
-                </div>
-
-                <div className="study-pack-note__block">
-                  <h3>Key words</h3>
-                  <div className="study-pack__terms">
-                    {keyTerms.map((term, index) => (
-                      <button
-                        type="button"
-                        key={term}
-                        onClick={() => {
-                          setActiveKeywordIndex(index);
-                          if (variant !== "three-mode") {
-                            onTabChange("keywords");
-                          }
-                        }}
-                      >
-                        {term}
-                      </button>
-                    ))}
-                  </div>
-                </div>
               </article>
             </section>
           )}

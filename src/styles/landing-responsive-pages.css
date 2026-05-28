@@ -395,6 +395,10 @@
     grid-template-columns: 1fr;
   }
 
+  .landing__problem-proof article:nth-child(3) {
+    grid-column: auto;
+  }
+
   .landing__problem-cost-grid,
   .landing__problem-equivalents > div,
   .landing__problem-solution > div,

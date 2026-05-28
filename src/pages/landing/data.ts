@@ -43,7 +43,7 @@ export const infoPages: Record<LandingInfoPageKey, {
   problem: {
     kicker: "At home",
     title: "The problem is access.",
-    body: "Private tutoring works, but it is expensive and usually booked by the hour. Students need help in smaller moments too: when homework gets stuck, when confidence drops, or when a question appears between sessions.",
+    body: "Private tutoring works. The problem is that regular help is still priced like a scarce appointment.",
     proof: ["voice practice", "lower monthly cost", "study support"],
     cards: [
       { title: "Price", body: "Regular help quickly becomes too expensive for ordinary homework nights." },
@@ -90,17 +90,24 @@ export const problemCostStats = [
 
 export const problemProofStats = [
   {
-    label: "Effectiveness",
+    label: "Fact 1",
     value: "+5 months",
     body: "One-to-one tuition can add around five months of progress on average.",
     source: "Education Endowment Foundation",
     href: "https://educationendowmentfoundation.org.uk/education-evidence/teaching-learning-toolkit/one-to-one-tuition",
   },
   {
-    label: "Cost",
+    label: "Fact 2",
     value: "£35-£55/hr",
-    body: "Common UK GCSE private tutoring rates make regular support hard to access.",
+    body: "Common UK GCSE private tutoring rates make regular support expensive.",
     source: "TutorLab UK cost guide",
+    href: "https://www.tutorlab.uk/blog/how-much-does-a-private-tutor-cost-uk",
+  },
+  {
+    label: "Fact 3",
+    value: "£140-£220/mo",
+    body: "One hour a week turns into a large monthly bill before exam-season extras.",
+    source: "Derived from TutorLab rates",
     href: "https://www.tutorlab.uk/blog/how-much-does-a-private-tutor-cost-uk",
   },
 ] as const;

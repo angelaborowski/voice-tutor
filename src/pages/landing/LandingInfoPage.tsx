@@ -90,17 +90,23 @@ export function LandingInfoPage({ page }: { page: LandingInfoPageKey }) {
             ))}
           </div>
         ) : (
-          <div className="landing__problem-proof" aria-label="Private tutoring evidence and cost">
-            {problemProofStats.map((stat) => (
-              <article key={stat.label}>
-                <span>{stat.label}</span>
-                <strong>{stat.value}</strong>
-                <p>{stat.body}</p>
-                <a href={stat.href} target="_blank" rel="noreferrer">
-                  Source: {stat.source}
-                </a>
-              </article>
-            ))}
+          <div className="landing__problem-fact-sheet" aria-label="Private tutoring evidence and cost">
+            <div className="landing__problem-fact-head">
+              <span>What the facts say</span>
+              <strong>Private tutoring is effective, but expensive to use regularly.</strong>
+            </div>
+            <div className="landing__problem-proof">
+              {problemProofStats.map((stat) => (
+                <article key={stat.label}>
+                  <span>{stat.label}</span>
+                  <strong>{stat.value}</strong>
+                  <p>{stat.body}</p>
+                  <a href={stat.href} target="_blank" rel="noreferrer">
+                    Source: {stat.source}
+                  </a>
+                </article>
+              ))}
+            </div>
           </div>
         )}
       </section>
