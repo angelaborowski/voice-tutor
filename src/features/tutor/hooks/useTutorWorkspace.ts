@@ -316,6 +316,7 @@ export function useTutorWorkspace() {
     }
 
     setIsStudyPackPending(true);
+    setStatusMessage("Building your pack in the background...");
     try {
       await requestStudyNote(activeSession);
       setStatusMessage("Learning pack ready");

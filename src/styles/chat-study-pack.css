@@ -171,6 +171,29 @@
   font-weight: 700;
 }
 
+.study-pack__loading-copy {
+  display: grid;
+  justify-items: center;
+  gap: 0.55rem;
+  max-width: 18rem;
+  text-align: center;
+}
+
+.study-pack__loading-copy p,
+.study-pack__loading-copy span {
+  margin: 0;
+  color: rgba(23, 18, 17, 0.58);
+  font-size: 0.78rem;
+  font-weight: 760;
+  line-height: 1.35;
+}
+
+.study-pack__loading-copy span {
+  max-width: 15rem;
+  color: rgba(23, 18, 17, 0.38);
+  font-size: 0.72rem;
+}
+
 .study-pack__section {
   display: grid;
   gap: 0.72rem;

@@ -157,15 +157,19 @@ export function StudyPackDrawer({
 
       {isPending && !note ? (
         <div data-lenis-prevent className="study-pack__loading">
-          <ShimmeringText
-            text="Building your learning pack..."
-            duration={1.15}
-            repeatDelay={0.1}
-            startOnView={false}
-            spread={3}
-            color="rgba(23, 18, 17, 0.34)"
-            shimmerColor="#171211"
-          />
+          <div className="study-pack__loading-copy" aria-live="polite">
+            <ShimmeringText
+              text="Building your learning pack..."
+              duration={1.15}
+              repeatDelay={0.1}
+              startOnView={false}
+              spread={3}
+              color="rgba(23, 18, 17, 0.34)"
+              shimmerColor="#171211"
+            />
+            <p>Usually takes 20-40 seconds. You can close this, I&apos;ll keep building.</p>
+            <span>I&apos;m sorting notes, words, cards, and quiz in the background.</span>
+          </div>
         </div>
       ) : note ? (
         <div data-lenis-prevent className="study-pack__body">
