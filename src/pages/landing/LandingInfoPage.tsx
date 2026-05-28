@@ -1,19 +1,15 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { syncTutorPersonality } from "@/features/tutor/api/client";
 import { AGENT_SETTINGS_STORAGE_KEY, readAgentSettings, type AgentSettings } from "@/features/tutor/domain/settings";
-import { gsap, useGSAP } from "@/lib/gsap";
 import { infoPages, problemProofStats, tutorPersonalities, tutorPricingPlans, type LandingInfoPageKey } from "./data";
 import { LandingBackground } from "./LandingBackground";
 import { LandingChromeMenu } from "./LandingChromeMenu";
-import { useLandingTransitionNavigate } from "./LandingRouteTransition";
 import { TutorFlickDeck } from "./TutorFlickDeck";
 
 export function LandingInfoPage({ page }: { page: LandingInfoPageKey }) {
   const navigate = useNavigate();
-  const transitionTo = useLandingTransitionNavigate();
-  const pageRef = useRef<HTMLElement | null>(null);
   const content = infoPages[page];
   const [selectedMode, setSelectedMode] = useState<AgentSettings["personality"]>(() => {
     const storedPersonality = readAgentSettings().personality;
@@ -35,67 +31,20 @@ export function LandingInfoPage({ page }: { page: LandingInfoPageKey }) {
     navigate("/app");
   };
 
-  const handleWaitlistClick = () => {
-    if (transitionTo) {
-      transitionTo("/");
-      return;
-    }
-
-    navigate("/");
-  };
-
-  useGSAP(() => {
-    const root = pageRef.current;
-    if (!root) return;
-
-    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const copyTargets = Array.from(root.querySelectorAll<HTMLElement>("[data-page-reveal]"));
-    const cardTargets = Array.from(root.querySelectorAll<HTMLElement>("[data-page-card]"));
-    const allTargets = [...copyTargets, ...cardTargets];
-    if (!allTargets.length) return;
-
-    if (prefersReducedMotion) {
-      gsap.set(allTargets, { autoAlpha: 1, y: 0, scale: 1 });
-      return;
-    }
-
-    gsap.set(copyTargets, { autoAlpha: 0, y: 16 });
-    gsap.set(cardTargets, { autoAlpha: 0, y: 18, scale: 0.985 });
-
-    gsap.timeline({
-      defaults: {
-        ease: "power3.out",
-      },
-    })
-      .to(copyTargets, {
-        autoAlpha: 1,
-        y: 0,
-        duration: 0.42,
-        stagger: 0.055,
-      }, 0.08)
-      .to(cardTargets, {
-        autoAlpha: 1,
-        y: 0,
-        scale: 1,
-        duration: 0.44,
-        stagger: 0.045,
-      }, 0.18);
-  }, { scope: pageRef, dependencies: [page], revertOnUpdate: true });
-
   return (
-    <main ref={pageRef} className="landing landing--page" aria-labelledby={`${page}-page-title`}>
+    <main className="landing landing--page" aria-labelledby={`${page}-page-title`}>
       <LandingBackground />
-      <LandingChromeMenu onStart={handleStartChat} onWaitlist={handleWaitlistClick} />
+      <LandingChromeMenu onStart={handleStartChat} onWaitlist={() => navigate("/")} />
 
       <section className={`landing__section landing__section--${page} landing__section--page`}>
         {page !== "problem" && page !== "tutors" && (
           <p className="landing__section-kicker">{content.kicker}</p>
         )}
         <div className="landing__section-copy">
-          <h1 data-page-reveal id={`${page}-page-title`}>{content.title}</h1>
-          <p data-page-reveal>{content.body}</p>
+          <h1 id={`${page}-page-title`}>{content.title}</h1>
+          <p>{content.body}</p>
           {page !== "problem" && content.proof.length > 0 && (
-            <ul data-page-reveal className="landing__section-proof" aria-label={`${content.kicker} highlights`}>
+            <ul className="landing__section-proof" aria-label={`${content.kicker} highlights`}>
               {content.proof.map((item) => (
                 <li key={item}>{item}</li>
               ))}
@@ -105,7 +54,7 @@ export function LandingInfoPage({ page }: { page: LandingInfoPageKey }) {
         {page === "tutors" ? (
           <>
             <TutorFlickDeck selectedMode={selectedMode} onSelect={handleSelectMode} />
-            <section data-page-card className="landing__tutor-pricing" aria-labelledby="tutor-pricing-title">
+            <section className="landing__tutor-pricing" aria-labelledby="tutor-pricing-title">
               <div className="landing__tutor-pricing-head">
                 <h2 id="tutor-pricing-title">Pricing</h2>
                 <p>Plans are built around student habits and uptime.</p>
@@ -148,7 +97,7 @@ export function LandingInfoPage({ page }: { page: LandingInfoPageKey }) {
             </div>
             <div className="landing__problem-proof">
               {problemProofStats.map((stat) => (
-                <article data-page-card key={stat.label}>
+                <article key={stat.label}>
                   <span>{stat.label}</span>
                   <strong>{stat.value}</strong>
                   <p>{stat.body}</p>

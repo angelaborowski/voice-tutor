@@ -263,7 +263,7 @@ export function TutorFlickDeck({
   }, { dependencies: [selectedMode, flickCards, onSelect], scope: deckRef, revertOnUpdate: true });
 
   return (
-    <div ref={deckRef} data-page-card data-flick-cards-init className="landing__mode-flick flick-group">
+    <div ref={deckRef} data-flick-cards-init className="landing__mode-flick flick-group">
       <div className="flick-group__relative-object" aria-hidden="true">
         <div className="flick-group__relative-object-before" />
       </div>

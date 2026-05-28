@@ -8,14 +8,12 @@ import { landingTutorBackgroundHues, landingTutorPalettes } from "./data";
 import { LandingBackground } from "./LandingBackground";
 import { LandingChromeMenu } from "./LandingChromeMenu";
 
-const LANDING_LOADER_SEEN_KEY = "teach-me-landing-loader-seen";
-
 export function LandingPage() {
   const navigate = useNavigate();
   const landingRef = useRef<HTMLElement | null>(null);
   const waitlistNameInputRef = useRef<HTMLInputElement | null>(null);
   const startTransitionRef = useRef(false);
-  const [isLoaded, setIsLoaded] = useState(() => window.sessionStorage.getItem(LANDING_LOADER_SEEN_KEY) === "true");
+  const [isLoaded, setIsLoaded] = useState(false);
   const [isStarting, setIsStarting] = useState(false);
   const [isWaitlistModalOpen, setIsWaitlistModalOpen] = useState(false);
   const [waitlistName, setWaitlistName] = useState("");
@@ -62,20 +60,9 @@ export function LandingPage() {
     if (!wrap) return;
 
     const completeLoad = contextSafe
-      ? contextSafe(() => {
-        window.sessionStorage.setItem(LANDING_LOADER_SEEN_KEY, "true");
-        setIsLoaded(true);
-      })
-      : () => {
-        window.sessionStorage.setItem(LANDING_LOADER_SEEN_KEY, "true");
-        setIsLoaded(true);
-      };
+      ? contextSafe(() => setIsLoaded(true))
+      : () => setIsLoaded(true);
     const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-    if (isLoaded) {
-      gsap.set(wrap, { display: "none" });
-      return;
-    }
 
     if (prefersReducedMotion) {
       gsap.set(wrap, { display: "none" });
@@ -150,7 +137,7 @@ export function LandingPage() {
     return () => {
       splitText.forEach((split) => split.revert());
     };
-  }, { scope: landingRef, dependencies: [isLoaded] });
+  }, { scope: landingRef });
 
   useGSAP(() => {
     if (!isLoaded) return;

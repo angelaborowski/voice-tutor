@@ -1,8 +1,6 @@
 import { lazy, Suspense } from "react";
 import { Route, Routes } from "react-router-dom";
 
-import { LandingRouteTransitionProvider } from "@/pages/landing/LandingRouteTransition";
-
 const LandingPage = lazy(() =>
   import("@/pages/landing").then((module) => ({ default: module.LandingPage })),
 );
@@ -19,16 +17,14 @@ const StudyPackDemoPage = lazy(() =>
 export default function App() {
   return (
     <Suspense fallback={null}>
-      <LandingRouteTransitionProvider>
-        <Routes>
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/problem" element={<LandingInfoPage page="problem" />} />
-          <Route path="/tutors" element={<LandingInfoPage page="tutors" />} />
-          <Route path="/demo-pack" element={<StudyPackDemoPage />} />
-          <Route path="/app" element={<VoiceTutorApp />} />
-          <Route path="*" element={<LandingPage />} />
-        </Routes>
-      </LandingRouteTransitionProvider>
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/problem" element={<LandingInfoPage page="problem" />} />
+        <Route path="/tutors" element={<LandingInfoPage page="tutors" />} />
+        <Route path="/demo-pack" element={<StudyPackDemoPage />} />
+        <Route path="/app" element={<VoiceTutorApp />} />
+        <Route path="*" element={<LandingPage />} />
+      </Routes>
     </Suspense>
   );
 }
