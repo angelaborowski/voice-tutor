@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import { syncTutorPersonality } from "@/features/tutor/api/client";
 import { AGENT_SETTINGS_STORAGE_KEY, readAgentSettings, type AgentSettings } from "@/features/tutor/domain/settings";
-import { infoPages, tutorPersonalities, tutorPricingPlans, type LandingInfoPageKey } from "./data";
+import { infoPages, problemProofStats, tutorPersonalities, tutorPricingPlans, type LandingInfoPageKey } from "./data";
 import { LandingBackground } from "./LandingBackground";
 import { LandingChromeMenu } from "./LandingChromeMenu";
 import { TutorFlickDeck } from "./TutorFlickDeck";
@@ -89,7 +89,20 @@ export function LandingInfoPage({ page }: { page: LandingInfoPageKey }) {
               </article>
             ))}
           </div>
-        ) : null}
+        ) : (
+          <div className="landing__problem-proof" aria-label="Private tutoring evidence and cost">
+            {problemProofStats.map((stat) => (
+              <article key={stat.label}>
+                <span>{stat.label}</span>
+                <strong>{stat.value}</strong>
+                <p>{stat.body}</p>
+                <a href={stat.href} target="_blank" rel="noreferrer">
+                  Source: {stat.source}
+                </a>
+              </article>
+            ))}
+          </div>
+        )}
       </section>
     </main>
   );

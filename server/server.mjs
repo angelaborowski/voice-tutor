@@ -5,6 +5,7 @@ import { ElevenLabsClient } from "@elevenlabs/elevenlabs-js";
 import OpenAI from "openai";
 import {
   isMeaningfulSpeechText,
+  compactTutorReply,
   localTutorReply,
   normalizeChatHistory,
 } from "./tutor-content.mjs";
@@ -17,6 +18,7 @@ import {
   normalizePersonality,
   tutorInstructions,
 } from "./tutor-prompts.mjs";
+import { PERSONALITY_PROFILES } from "./tutor-data.mjs";
 import { addWaitlistEmail, createWaitlistEntry, postWaitlistWebhook } from "./waitlist.mjs";
 
 const PORT = Number(process.env.PORT ?? 3001);
@@ -29,15 +31,6 @@ const WAITLIST_PATH = process.env.WAITLIST_PATH
 const WAITLIST_WEBHOOK_URL = process.env.WAITLIST_WEBHOOK_URL;
 const WAITLIST_SECRET = process.env.WAITLIST_SECRET ?? "";
 let currentPersonality = "athena";
-
-const tutorPreviewLines = {
-  athena: "I'm Athena. Let's sharpen the answer with precise subject language and one clear missing link.",
-  apollo: "I'm Apollo. I'll make the idea clearer first, then check it with one simple question.",
-  hermes: "I'm Hermes. Quick round: I'll keep the pace up and help the answer stick.",
-  socrates: "I'm Socrates. Let's reason it out together, one careful question at a time.",
-  hestia: "I'm Hestia. No pressure. We'll take one small step, then build confidence from there.",
-  ares: "I'm Ares. Ready. I'll pressure-test your answer and drill the weak spots until it holds.",
-};
 
 const tutorVoiceIds = {
   athena: process.env.VITE_TEACHME_VOICE_ATHENA
@@ -222,7 +215,7 @@ app.get("/api/tutor-preview/:personality", async (req, res) => {
 
     if (!audioBuffer) {
       const audio = await elevenlabs.textToSpeech.convert(voiceId, {
-        text: tutorPreviewLines[personality],
+        text: PERSONALITY_PROFILES[personality].previewLine,
         modelId: "eleven_multilingual_v2",
         outputFormat: "mp3_44100_128",
         voiceSettings: {
@@ -257,7 +250,7 @@ app.post("/api/chat", async (req, res) => {
   }
 
   if (!openai) {
-    res.json({ reply: localTutorReply(input, personality) });
+    res.json({ reply: compactTutorReply(localTutorReply(input, personality)) });
     return;
   }
 
@@ -271,10 +264,12 @@ app.post("/api/chat", async (req, res) => {
         content: String(message.text ?? ""),
       })),
     });
-    res.json({ reply: response.output_text?.trim() || localTutorReply(input, personality) });
+    res.json({
+      reply: compactTutorReply(response.output_text) || compactTutorReply(localTutorReply(input, personality)),
+    });
   } catch (error) {
     console.error("Chat error", error);
-    res.json({ reply: localTutorReply(input, personality) });
+    res.json({ reply: compactTutorReply(localTutorReply(input, personality)) });
   }
 });
 

@@ -88,6 +88,23 @@ export const problemCostStats = [
   },
 ];
 
+export const problemProofStats = [
+  {
+    label: "Effectiveness",
+    value: "+5 months",
+    body: "One-to-one tuition can add around five months of progress on average.",
+    source: "Education Endowment Foundation",
+    href: "https://educationendowmentfoundation.org.uk/education-evidence/teaching-learning-toolkit/one-to-one-tuition",
+  },
+  {
+    label: "Cost",
+    value: "£35-£55/hr",
+    body: "Common UK GCSE private tutoring rates make regular support hard to access.",
+    source: "TutorLab UK cost guide",
+    href: "https://www.tutorlab.uk/blog/how-much-does-a-private-tutor-cost-uk",
+  },
+] as const;
+
 export const problemCostComparison = [
   { label: "Private tutor", value: "£40/hr", detail: "A typical hour of one-to-one help." },
   { label: "Weekly tutor", value: "£160/mo", detail: "One hour a week, four times a month." },

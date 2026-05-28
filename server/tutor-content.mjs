@@ -141,6 +141,13 @@ export function localTutorReply(input, personality = "athena") {
   return "Let's start simply. When temperature increases, particles gain kinetic energy. What does that do to how often they collide?";
 }
 
+export function compactTutorReply(value) {
+  return String(value ?? "")
+    .trim()
+    .replace(/[ \t]*\n+[ \t]*/g, " ")
+    .replace(/\s{2,}/g, " ");
+}
+
 function specificTutorReply(text, subject, opener) {
   if (hasKeyword(text, "photosynthesis")) {
     return {
@@ -155,8 +162,8 @@ function specificTutorReply(text, subject, opener) {
   if (hasKeyword(text, "quadratic") || hasKeyword(text, "quadratics")) {
     return {
       explain:
-        "A quadratic has an x squared term. First decide the method: factorise, formula, or complete the square. If it looks like x² + 5x + 6, find two numbers that multiply to 6 and add to 5. What are they?",
-      quiz: "One quadratic check: in x² + 5x + 6, which two numbers multiply to 6 and add to 5?",
+        "A quadratic has an $x^2$ term. First decide the method: factorise, formula, or complete the square. If it looks like $x^2 + 5x + 6$, find two numbers that multiply to 6 and add to 5. What are they?",
+      quiz: "One quadratic check: in $x^2 + 5x + 6$, which two numbers multiply to 6 and add to 5?",
       modelAnswer:
         "To solve a factorisable quadratic, put it equal to zero, find two numbers that multiply to the constant and add to the x coefficient, factorise, then set each bracket to zero.",
     };

@@ -12,35 +12,91 @@ declare global {
 
 export type AgentSettings = {
   userName: string;
-  personality: "athena" | "apollo" | "hermes" | "socrates" | "hestia" | "ares";
+  personality: TutorPersonalityId;
 };
 
 export type StudyPackTab = "summary" | "keywords" | "flashcards" | "quiz";
 export type StudioBackdrop = "void" | "paper" | "aurora" | "blueprint" | "sunrise" | "fabric" | "shadow";
 export type StudioTheme = "light" | "dark";
+export type TutorPersonalityPalette = [string, string];
+export type TutorPersonalityProfile = {
+  label: string;
+  shortDescription: string;
+  opener: string;
+  colors: TutorPersonalityPalette;
+  voiceId?: string;
+};
 
 export const AGENT_SETTINGS_STORAGE_KEY = "teach-me:agent-settings:v1";
 export const STUDIO_BACKDROP_STORAGE_KEY = "teach-me:studio-backdrop:v2";
 
-export const personalityLabels: Record<AgentSettings["personality"], string> = {
-  athena: "Athena",
-  apollo: "Apollo",
-  hermes: "Hermes",
-  socrates: "Socrates",
-  hestia: "Hestia",
-  ares: "Ares",
-};
+const env = import.meta.env as Record<string, string | undefined>;
 
-export const personalityColors: Record<AgentSettings["personality"], [string, string]> = {
-  athena: ["#8BE4C2", "#F0B98A"],
-  apollo: ["#8FB8FF", "#F0C18F"],
-  hermes: ["#FFD84D", "#FF7F6E"],
-  socrates: ["#B59BFF", "#86DFFF"],
-  hestia: ["#F3A8CB", "#AFE18F"],
-  ares: ["#EBA783", "#AFC7FF"],
-};
+export const tutorPersonalityProfiles = {
+  athena: {
+    label: "Athena",
+    shortDescription: "Strategic answer upgrades.",
+    opener: "Good.",
+    colors: ["#8BE4C2", "#F0B98A"],
+    voiceId: env.VITE_TEACHME_VOICE_ATHENA ?? env.VITE_OUTLOUD_VOICE_ATHENA ?? "uIZsnBL0YK1S5j69bAih",
+  },
+  apollo: {
+    label: "Apollo",
+    shortDescription: "Calm, tidy explanations.",
+    opener: "Clear.",
+    colors: ["#8FB8FF", "#F0C18F"],
+    voiceId: env.VITE_TEACHME_VOICE_APOLLO ?? env.VITE_OUTLOUD_VOICE_APOLLO,
+  },
+  hermes: {
+    label: "Hermes",
+    shortDescription: "Fast prompts and recall.",
+    opener: "Nice, we're live.",
+    colors: ["#FFD84D", "#FF7F6E"],
+    voiceId: env.VITE_TEACHME_VOICE_HERMES ?? env.VITE_OUTLOUD_VOICE_HERMES,
+  },
+  socrates: {
+    label: "Socrates",
+    shortDescription: "Questions first, answers earned.",
+    opener: "Good question.",
+    colors: ["#B59BFF", "#86DFFF"],
+    voiceId: env.VITE_TEACHME_VOICE_SOCRATES ?? env.VITE_OUTLOUD_VOICE_SOCRATES,
+  },
+  hestia: {
+    label: "Hestia",
+    shortDescription: "Gentle, steady support.",
+    opener: "No pressure.",
+    colors: ["#F3A8CB", "#AFE18F"],
+    voiceId: env.VITE_TEACHME_VOICE_HESTIA ?? env.VITE_OUTLOUD_VOICE_HESTIA,
+  },
+  ares: {
+    label: "Ares",
+    shortDescription: "Direct challenge drills.",
+    opener: "Ready.",
+    colors: ["#EBA783", "#AFC7FF"],
+    voiceId: env.VITE_TEACHME_VOICE_ARES ?? env.VITE_OUTLOUD_VOICE_ARES,
+  },
+} satisfies Record<string, TutorPersonalityProfile>;
 
-export const personalityOptions = Object.keys(personalityLabels) as AgentSettings["personality"][];
+export type TutorPersonalityId = keyof typeof tutorPersonalityProfiles;
+
+export const DEFAULT_TUTOR_PERSONALITY: TutorPersonalityId = "athena";
+export const tutorPersonalityOptions = Object.keys(tutorPersonalityProfiles) as TutorPersonalityId[];
+
+function mapTutorPersonalityProfiles<Value>(
+  selectValue: (profile: TutorPersonalityProfile) => Value,
+): Record<TutorPersonalityId, Value> {
+  return Object.fromEntries(
+    tutorPersonalityOptions.map((personality) => [
+      personality,
+      selectValue(tutorPersonalityProfiles[personality]),
+    ]),
+  ) as Record<TutorPersonalityId, Value>;
+}
+
+export const personalityOptions = tutorPersonalityOptions;
+export const personalityLabels = mapTutorPersonalityProfiles((profile) => profile.label);
+export const personalityDescriptions = mapTutorPersonalityProfiles((profile) => profile.shortDescription);
+export const personalityColors = mapTutorPersonalityProfiles((profile) => profile.colors);
 
 export const studioBackdropOptions: Array<{ id: StudioBackdrop; label: string; colors: [string, string] }> = [
   { id: "void", label: "Void", colors: ["#030303", "#1a1a1a"] },
@@ -52,18 +108,12 @@ export const studioBackdropOptions: Array<{ id: StudioBackdrop; label: string; c
   { id: "shadow", label: "Shadow", colors: ["#171717", "#777168"] },
 ];
 
-const env = import.meta.env as Record<string, string | undefined>;
-const personalityVoiceIds: Partial<Record<AgentSettings["personality"], string>> = {
-  athena: env.VITE_TEACHME_VOICE_ATHENA ?? env.VITE_OUTLOUD_VOICE_ATHENA ?? "uIZsnBL0YK1S5j69bAih",
-  apollo: env.VITE_TEACHME_VOICE_APOLLO ?? env.VITE_OUTLOUD_VOICE_APOLLO,
-  hermes: env.VITE_TEACHME_VOICE_HERMES ?? env.VITE_OUTLOUD_VOICE_HERMES,
-  socrates: env.VITE_TEACHME_VOICE_SOCRATES ?? env.VITE_OUTLOUD_VOICE_SOCRATES,
-  hestia: env.VITE_TEACHME_VOICE_HESTIA ?? env.VITE_OUTLOUD_VOICE_HESTIA,
-  ares: env.VITE_TEACHME_VOICE_ARES ?? env.VITE_OUTLOUD_VOICE_ARES,
-};
+export function isTutorPersonalityId(value: unknown): value is TutorPersonalityId {
+  return typeof value === "string" && value in tutorPersonalityProfiles;
+}
 
-export function getPersonalityVoiceId(personality: AgentSettings["personality"]) {
-  const voiceId = personalityVoiceIds[personality]?.trim();
+export function getPersonalityVoiceId(personality: TutorPersonalityId) {
+  const voiceId = tutorPersonalityProfiles[personality].voiceId?.trim();
   return voiceId || undefined;
 }
 
@@ -83,14 +133,14 @@ export function readAgentSettings(): AgentSettings {
       userName: typeof parsed.userName === "string" && parsed.userName.trim()
         ? parsed.userName.trim()
         : "Learner",
-      personality: personalityOptions.includes(parsed.personality)
+      personality: isTutorPersonalityId(parsed.personality)
         ? parsed.personality
-        : "athena",
+        : DEFAULT_TUTOR_PERSONALITY,
     };
   } catch {
     return {
       userName: "Learner",
-      personality: "athena",
+      personality: DEFAULT_TUTOR_PERSONALITY,
     };
   }
 }

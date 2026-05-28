@@ -166,17 +166,19 @@
   }
 
   .chat__topbar {
+    top: auto;
     right: 0.82rem;
+    bottom: max(0.72rem, env(safe-area-inset-bottom));
     left: 0.82rem;
   }
 
   .thread-shell--fresh .thread__content {
-    padding-bottom: clamp(8rem, 22svh, 12rem);
+    padding-bottom: clamp(5.2rem, 15svh, 7.5rem);
   }
 
   .conversation-bar {
     width: min(100% - 1.2rem, 24rem);
-    padding-bottom: calc(4.65rem + env(safe-area-inset-bottom));
+    padding-bottom: calc(0.45rem + env(safe-area-inset-bottom));
   }
 
   .study-pack {
@@ -398,8 +400,9 @@
   }
 
   .chat__topbar {
-    top: max(4rem, calc(env(safe-area-inset-top) + 3.55rem));
+    top: auto;
     right: 1rem;
+    bottom: max(0.72rem, env(safe-area-inset-bottom));
     left: 1rem;
   }
 

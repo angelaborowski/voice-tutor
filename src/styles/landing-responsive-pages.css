@@ -237,6 +237,10 @@
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
+  .landing__problem-proof {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .landing__problem-cost-grid,
   .landing__problem-solution > div,
   .landing__tutor-pricing-grid {
@@ -387,6 +391,10 @@
     grid-template-columns: 1fr;
   }
 
+  .landing__problem-proof {
+    grid-template-columns: 1fr;
+  }
+
   .landing__problem-cost-grid,
   .landing__problem-equivalents > div,
   .landing__problem-solution > div,
@@ -495,14 +503,15 @@
   }
 
   .chat__topbar {
-    top: max(0.78rem, env(safe-area-inset-top));
+    top: auto;
     right: 0.82rem;
+    bottom: max(0.72rem, env(safe-area-inset-bottom));
     left: 5rem;
   }
 
   .chat__actions {
     width: 100%;
-    justify-content: flex-end;
+    justify-content: center;
   }
 
   .chat__status {
@@ -515,6 +524,7 @@
   .chat__pack-button {
     min-width: 2.1rem;
     min-height: 2.1rem;
+    transform: scale(0.92);
   }
 
   .thread-shell,
@@ -532,8 +542,8 @@
 
   .thread-shell--fresh .thread__content {
     justify-content: center;
-    padding-top: 0.5rem;
-    padding-bottom: clamp(6.2rem, 18svh, 9rem);
+    padding-top: clamp(1.4rem, 5svh, 3rem);
+    padding-bottom: clamp(5.2rem, 15svh, 7.5rem);
   }
 
   .thread-shell--fresh .thread__orb {
@@ -553,7 +563,7 @@
 
   .conversation-bar {
     align-self: end;
-    padding: 0 0 calc(0.8rem + env(safe-area-inset-bottom));
+    padding: 0 0 calc(0.45rem + env(safe-area-inset-bottom));
   }
 
   .conversation-bar__card {

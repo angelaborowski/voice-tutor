@@ -5,8 +5,8 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import test from "node:test";
 
-import { localTutorReply, normalizeChatHistory } from "./tutor-content.mjs";
-import { PERSONALITIES } from "./tutor-data.mjs";
+import { compactTutorReply, localTutorReply, normalizeChatHistory } from "./tutor-content.mjs";
+import { PERSONALITIES, PERSONALITY_PROFILES } from "./tutor-data.mjs";
 import { localStudyNote, normalizeNote, parseJsonObject } from "./tutor-note.mjs";
 import { normalizePersonality, tutorInstructions } from "./tutor-prompts.mjs";
 import {
@@ -90,7 +90,29 @@ test("parses fenced JSON and preserves latest chat turn", () => {
 
 test("prompt instructions include every supported personality", () => {
   for (const personality of PERSONALITIES) {
-    assert.match(tutorInstructions(personality), new RegExp(`Personality: ${titleCase(personality)}\\.`));
+    const prompt = tutorInstructions(personality);
+    const profile = PERSONALITY_PROFILES[personality];
+
+    assert.match(prompt, new RegExp(`Personality: ${titleCase(personality)}\\.`));
+    assert.match(prompt, /Teaching posture:/);
+    assert.match(prompt, /Response rhythm:/);
+    assert.match(prompt, /Strengths:/);
+    assert.match(prompt, /Avoid:/);
+    assert.match(prompt, new RegExp(escapeRegExp(profile.teachingPosture)));
+  }
+});
+
+test("personality profiles keep all runtime tutor metadata together", () => {
+  for (const personality of PERSONALITIES) {
+    const profile = PERSONALITY_PROFILES[personality];
+
+    assert.ok(profile.label);
+    assert.ok(profile.opener);
+    assert.ok(profile.previewLine);
+    assert.ok(profile.teachingPosture);
+    assert.ok(profile.responseRhythm);
+    assert.ok(profile.strengths.length > 0);
+    assert.ok(profile.avoidances.length > 0);
   }
 });
 
@@ -100,6 +122,35 @@ test("prompt instructions safely fall back for invalid personalities", () => {
   for (const personality of invalidPersonalities) {
     assert.match(tutorInstructions(personality), /Personality: Athena\./);
   }
+});
+
+test("prompt instructions preserve core tutoring constraints", () => {
+  const prompt = tutorInstructions("hestia");
+
+  assert.match(prompt, /no learner-facing modes/i);
+  assert.match(prompt, /one short follow-up question/i);
+  assert.match(prompt, /Do not ask compound either\/or questions/i);
+  assert.match(prompt, /starter sentence or fill-in-the-blank/i);
+  assert.match(prompt, /upgrade one phrase/i);
+  assert.match(prompt, /correct answer, affirm it clearly/i);
+  assert.match(prompt, /do not write a full pack in the chat reply/i);
+  assert.match(prompt, /dollar delimiters/i);
+  assert.match(prompt, /\$F = ma\$/);
+  assert.match(prompt, /blank lines/i);
+});
+
+test("local maths fallback uses dollar-delimited latex", () => {
+  const reply = localTutorReply("test me on quadratic equations", "apollo");
+
+  assert.match(reply, /\$x\^2 \+ 5x \+ 6\$/);
+  assert.doesNotMatch(reply, /x²/);
+});
+
+test("compacts model replies for the chat surface", () => {
+  assert.equal(
+    compactTutorReply("First sentence.\n\nSecond sentence.   Third sentence."),
+    "First sentence. Second sentence. Third sentence.",
+  );
 });
 
 test("normalizes and validates waitlist emails", () => {
@@ -182,4 +233,8 @@ test("posts waitlist entries to webhook with shared secret", async () => {
 
 function titleCase(value) {
   return value[0].toUpperCase() + value.slice(1);
+}
+
+function escapeRegExp(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }

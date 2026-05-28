@@ -1,18 +1,14 @@
 import { chemistryTopic, subjectHints, topicHints, type SubjectHint } from "./tutorData";
 import type { TutorMessage } from "./types";
-
-const localPersonalityOpeners: Record<string, string> = {
-  athena: "Good.",
-  apollo: "Clear.",
-  hermes: "Nice, we're live.",
-  socrates: "Good question.",
-  hestia: "No pressure.",
-  ares: "Ready.",
-};
+import {
+  DEFAULT_TUTOR_PERSONALITY,
+  isTutorPersonalityId,
+  tutorPersonalityProfiles,
+} from "./settings";
 
 export function buildLocalTutorReply(input: string, history: TutorMessage[], personality = "athena") {
   const normalized = input.toLowerCase();
-  const opener = localPersonalityOpeners[personality] ?? localPersonalityOpeners.athena;
+  const opener = localPersonalityOpener(personality);
   const studentTurns = history.filter((message) => message.role === "student").length;
   const transcript = history.map((message) => message.text).join(" ").toLowerCase();
   const topic = findTopic(normalized) ?? findTopic(transcript);
@@ -160,6 +156,10 @@ export function buildLocalTutorReply(input: string, history: TutorMessage[], per
   return `${topic.coach} Which part should we tighten: the particle idea, the collision link, or the final exam sentence?`;
 }
 
+function localPersonalityOpener(personality: string) {
+  const normalized = isTutorPersonalityId(personality) ? personality : DEFAULT_TUTOR_PERSONALITY;
+  return tutorPersonalityProfiles[normalized].opener;
+}
 
 function specificTutorReply(text: string, _subject: SubjectHint) {
   if (hasKeyword(text, "photosynthesis")) {
@@ -175,8 +175,8 @@ function specificTutorReply(text: string, _subject: SubjectHint) {
   if (hasKeyword(text, "quadratic") || hasKeyword(text, "quadratics")) {
     return {
       explain:
-        "A quadratic has an x squared term. First decide the method: factorise, formula, or complete the square. If it looks like x² + 5x + 6, find two numbers that multiply to 6 and add to 5. What are they?",
-      quiz: "One quadratic check: in x² + 5x + 6, which two numbers multiply to 6 and add to 5?",
+        "A quadratic has an $x^2$ term. First decide the method: factorise, formula, or complete the square. If it looks like $x^2 + 5x + 6$, find two numbers that multiply to 6 and add to 5. What are they?",
+      quiz: "One quadratic check: in $x^2 + 5x + 6$, which two numbers multiply to 6 and add to 5?",
       modelAnswer:
         "To solve a factorisable quadratic, put it equal to zero, find two numbers that multiply to the constant and add to the x coefficient, factorise, then set each bracket to zero.",
     };

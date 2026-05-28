@@ -3,44 +3,33 @@ import type { CSSProperties } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import {
-  personalityColors,
-  personalityLabels,
-  personalityOptions,
-  type AgentSettings,
+  tutorPersonalityOptions,
+  tutorPersonalityProfiles,
+  type TutorPersonalityId,
 } from "@/features/tutor/domain/settings";
 
-type TutorPersonality = AgentSettings["personality"];
-
 type TutorPickerProps = {
-  value: TutorPersonality;
+  value: TutorPersonalityId;
   disabled?: boolean;
-  onValueChange: (value: TutorPersonality) => void;
-};
-
-const tutorDescriptions: Record<TutorPersonality, string> = {
-  athena: "Strategic answer upgrades.",
-  apollo: "Calm, tidy explanations.",
-  hermes: "Fast prompts and recall.",
-  socrates: "Questions first, answers earned.",
-  hestia: "Gentle, steady support.",
-  ares: "Direct challenge drills.",
+  onValueChange: (value: TutorPersonalityId) => void;
 };
 
 export function TutorPicker({ value, disabled = false, onValueChange }: TutorPickerProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState("");
   const wrapperRef = useRef<HTMLDivElement>(null);
-  const selectedColors = personalityColors[value];
-  const selectedLabel = personalityLabels[value];
+  const selectedTutor = tutorPersonalityProfiles[value];
 
   const filteredTutors = useMemo(() => {
     const normalized = query.trim().toLowerCase();
-    if (!normalized) return personalityOptions;
+    if (!normalized) return tutorPersonalityOptions;
 
-    return personalityOptions.filter((personality) => {
-      const label = personalityLabels[personality].toLowerCase();
-      const description = tutorDescriptions[personality].toLowerCase();
-      return label.includes(normalized) || description.includes(normalized);
+    return tutorPersonalityOptions.filter((personality) => {
+      const tutor = tutorPersonalityProfiles[personality];
+      return (
+        tutor.label.toLowerCase().includes(normalized) ||
+        tutor.shortDescription.toLowerCase().includes(normalized)
+      );
     });
   }, [query]);
 
@@ -72,18 +61,18 @@ export function TutorPicker({ value, disabled = false, onValueChange }: TutorPic
         disabled={disabled}
         aria-expanded={isOpen}
         aria-haspopup="listbox"
-        aria-label={`Choose tutor. Current tutor: ${selectedLabel}`}
+        aria-label={`Choose tutor. Current tutor: ${selectedTutor.label}`}
       >
         <span
           className="tutor-picker__orb"
           aria-hidden="true"
           style={{
-            "--tutor-picker-a": selectedColors[0],
-            "--tutor-picker-b": selectedColors[1],
+            "--tutor-picker-a": selectedTutor.colors[0],
+            "--tutor-picker-b": selectedTutor.colors[1],
           } as CSSProperties}
         />
         <span className="tutor-picker__copy">
-          <strong>{selectedLabel}</strong>
+          <strong>{selectedTutor.label}</strong>
           <span>Tutor</span>
         </span>
         <ChevronDown size={16} aria-hidden="true" />
@@ -104,7 +93,7 @@ export function TutorPicker({ value, disabled = false, onValueChange }: TutorPic
 
           <div className="tutor-picker__list" role="listbox" aria-label="Available tutors">
             {filteredTutors.map((personality) => {
-              const colors = personalityColors[personality];
+              const tutor = tutorPersonalityProfiles[personality];
               const isSelected = personality === value;
 
               return (
@@ -124,13 +113,13 @@ export function TutorPicker({ value, disabled = false, onValueChange }: TutorPic
                     className="tutor-picker__orb"
                     aria-hidden="true"
                     style={{
-                      "--tutor-picker-a": colors[0],
-                      "--tutor-picker-b": colors[1],
+                      "--tutor-picker-a": tutor.colors[0],
+                      "--tutor-picker-b": tutor.colors[1],
                     } as CSSProperties}
                   />
                   <span className="tutor-picker__option-copy">
-                    <strong>{personalityLabels[personality]}</strong>
-                    <span>{tutorDescriptions[personality]}</span>
+                    <strong>{tutor.label}</strong>
+                    <span>{tutor.shortDescription}</span>
                   </span>
                   <span className="tutor-picker__preview" aria-hidden="true">
                     {isSelected ? <Check size={15} /> : <Play size={13} />}

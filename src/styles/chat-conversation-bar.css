@@ -439,7 +439,7 @@
 @media (max-width: 820px) {
   .chat__composer {
     width: min(100% - 1rem, 31rem);
-    padding-bottom: calc(4.4rem + env(safe-area-inset-bottom));
+    padding-bottom: calc(3.7rem + env(safe-area-inset-bottom));
   }
 
   .chat__composer-panel {
@@ -477,6 +477,7 @@
 @media (max-width: 520px) {
   .chat__composer {
     width: min(100% - 0.9rem, 25.5rem);
+    padding-bottom: calc(3.45rem + env(safe-area-inset-bottom));
   }
 
   .chat__composer-panel {

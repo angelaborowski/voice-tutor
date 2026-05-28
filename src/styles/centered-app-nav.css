@@ -505,8 +505,9 @@
 
 @media screen and (max-width: 767px) {
   .chat__topbar {
-    top: max(6rem, calc(env(safe-area-inset-top) + 5.55rem));
+    top: auto;
     right: 1rem;
+    bottom: max(0.72rem, env(safe-area-inset-bottom));
     left: 1rem;
   }
 
