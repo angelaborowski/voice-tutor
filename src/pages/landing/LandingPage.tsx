@@ -92,46 +92,46 @@ export function LandingPage() {
     const loadTimeline = gsap.timeline({
       defaults: {
         ease: "voiceLoader",
-        duration: 2.45,
+        duration: 1.35,
       },
       onComplete: completeLoad,
     });
 
     loadTimeline
       .to(progressBar, { scaleX: 1 })
-      .to(orb, { scale: 1, autoAlpha: 1, duration: 1.2 }, "<")
+      .to(orb, { scale: 1, autoAlpha: 1, duration: 0.85 }, "<")
       .to(splitChars[0] ?? [], {
         autoAlpha: 1,
         yPercent: 0,
-        duration: 0.55,
-        stagger: { each: 0.018 },
+        duration: 0.38,
+        stagger: { each: 0.012 },
       }, 0.1)
       .to(splitChars[0] ?? [], {
         autoAlpha: 0,
         yPercent: -125,
-        duration: 0.38,
-        stagger: { each: 0.014 },
-      }, ">+=0.28")
+        duration: 0.26,
+        stagger: { each: 0.01 },
+      }, ">+=0.18")
       .to(splitChars[1] ?? [], {
         autoAlpha: 1,
         yPercent: 0,
-        duration: 0.55,
-        stagger: { each: 0.018 },
+        duration: 0.38,
+        stagger: { each: 0.012 },
       }, "<")
-      .add("hideContent", ">+=0.38")
+      .add("hideContent", ">+=0.18")
       .to(splitChars[1] ?? [], {
         autoAlpha: 0,
         yPercent: -125,
-        duration: 0.36,
-        stagger: { each: 0.014 },
+        duration: 0.26,
+        stagger: { each: 0.01 },
       }, "hideContent")
-      .to(container, { autoAlpha: 0, scale: 0.96, duration: 0.5 }, "hideContent")
+      .to(container, { autoAlpha: 0, scale: 0.96, duration: 0.32 }, "hideContent")
       .to(progressBar, {
         scaleX: 0,
         transformOrigin: "right center",
-        duration: 0.5,
+        duration: 0.32,
       }, "hideContent")
-      .to(bg, { yPercent: -101, duration: 0.9 }, "hideContent")
+      .to(bg, { yPercent: -101, duration: 0.55 }, "hideContent")
       .set(wrap, { display: "none" });
 
     return () => {
