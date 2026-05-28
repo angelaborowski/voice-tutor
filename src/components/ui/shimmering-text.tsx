@@ -54,59 +54,34 @@ export function ShimmeringText({
 
   // Determine if we should start animation
   const shouldAnimate = !startOnView || isInView
+  const maskWidth = Math.max(48, Math.min(180, dynamicSpread * 1.6))
 
   return (
     <motion.span
       ref={ref}
-      className={cn(
-        "relative inline-block bg-[length:250%_100%,auto] bg-clip-text text-transparent",
-        "[--base-color:var(--muted-foreground)] [--shimmer-color:var(--foreground)]",
-        "[background-repeat:no-repeat,padding-box]",
-        "[--shimmer-bg:linear-gradient(90deg,transparent_calc(50%-var(--spread)),var(--shimmer-color),transparent_calc(50%+var(--spread)))]",
-        "dark:[--base-color:var(--muted-foreground)] dark:[--shimmer-color:var(--foreground)]",
-        className
-      )}
+      data-shimmer-text={text}
+      className={cn("shimmering-text", shouldAnimate && "is-animated", className)}
       style={
         {
-          "--spread": `${dynamicSpread}px`,
-          "--shimmer-bg": "linear-gradient(90deg, transparent calc(50% - var(--spread)), var(--shimmer-color), transparent calc(50% + var(--spread)))",
-          ...(color && { "--base-color": color }),
-          ...(shimmerColor && { "--shimmer-color": shimmerColor }),
-          backgroundImage: `var(--shimmer-bg), linear-gradient(var(--base-color), var(--base-color))`,
-          backgroundClip: "text, text",
-          WebkitBackgroundClip: "text, text",
-          backgroundRepeat: "no-repeat, no-repeat",
-          backgroundOrigin: "padding-box",
-          backgroundSize: "250% 100%, auto",
-          color: "transparent",
-          contain: "paint",
-          display: "inline-block",
-          minWidth: "max-content",
-          position: "relative",
-          transform: "translateZ(0)",
-          willChange: "background-position",
+          "--shimmer-base-color": color ?? "var(--muted-foreground)",
+          "--shimmer-highlight-color": shimmerColor ?? "var(--foreground)",
+          "--shimmer-mask-width": `${maskWidth}px`,
+          "--shimmer-cycle-duration": `${duration + repeatDelay}s`,
+          "--shimmer-delay": `${delay}s`,
+          "--shimmer-iteration-count": repeat ? "infinite" : "1",
         } as React.CSSProperties
       }
       initial={{
-        backgroundPosition: "100% center",
         opacity: 0,
       }}
       animate={
         shouldAnimate
           ? {
-              backgroundPosition: "0% center",
               opacity: 1,
             }
           : {}
       }
       transition={{
-        backgroundPosition: {
-          repeat: repeat ? Infinity : 0,
-          duration,
-          delay,
-          repeatDelay,
-          ease: "linear",
-        },
         opacity: {
           duration: 0.3,
           delay,

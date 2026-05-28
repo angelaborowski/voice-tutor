@@ -45,6 +45,17 @@ export async function syncTutorPersonality(personality: string): Promise<void> {
   });
 }
 
+export async function fetchTutorPreviewAudio(personality: string): Promise<Blob> {
+  const response = await fetch(`/api/tutor-preview/${encodeURIComponent(personality)}`, {
+    cache: "no-store",
+  });
+  if (!response.ok) {
+    throw new Error(`Tutor preview request failed (${response.status})`);
+  }
+
+  return response.blob();
+}
+
 export async function generateStudyNote(
   history: TutorMessage[],
 ): Promise<StudyNote> {

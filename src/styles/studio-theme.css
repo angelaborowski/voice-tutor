@@ -336,12 +336,12 @@
   text-shadow: 0 0.95rem 2.8rem rgba(255, 255, 255, 0.24);
 }
 
-.workspace[data-theme-status="light"] .thread__message--tutor .thread__bubble span,
+.workspace[data-theme-status="light"] .thread__message--tutor .thread__bubble > span,
 .workspace[data-theme-status="light"] .thread__message--tutor .thread__bubble time {
   color: rgba(23, 18, 17, 0.42);
 }
 
-.workspace[data-theme-status="dark"] .thread__message--tutor .thread__bubble span,
+.workspace[data-theme-status="dark"] .thread__message--tutor .thread__bubble > span,
 .workspace[data-theme-status="dark"] .thread__message--tutor .thread__bubble time {
   color: rgba(255, 255, 255, 0.46);
 }
@@ -359,7 +359,7 @@
     rgba(255, 255, 255, 0.075);
 }
 
-.workspace[data-theme-status="dark"] .thread__bubble span,
+.workspace[data-theme-status="dark"] .thread__bubble > span,
 .workspace[data-theme-status="dark"] .thread__bubble time {
   color: rgba(247, 247, 244, 0.5);
 }

@@ -104,6 +104,66 @@ data/waitlist.csv
 
 The `data` directory is ignored by git so real signups stay local. Override the file location with `WAITLIST_PATH` in `.env.local` if you want the CSV somewhere else.
 
+For a quick deployed setup on Vercel, send signups to Google Sheets:
+
+1. Create a Google Sheet with columns: `createdAt`, `name`, `email`, `source`, `userAgent`.
+2. Open **Extensions -> Apps Script** and paste this:
+
+```js
+function json(data) {
+  return ContentService
+    .createTextOutput(JSON.stringify(data))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+function doPost(event) {
+  try {
+    const body = JSON.parse(event.postData.contents || "{}");
+    const secret = PropertiesService.getScriptProperties().getProperty("WAITLIST_SECRET");
+
+    if (!secret || body.secret !== secret) {
+      return json({ ok: false, error: "Unauthorized" });
+    }
+
+    const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheets()[0];
+    if (sheet.getLastRow() === 0) {
+      sheet.appendRow(["createdAt", "name", "email", "source", "userAgent"]);
+    }
+
+    const email = String(body.email || "").trim().toLowerCase();
+    const existingEmails = sheet.getLastRow() > 1
+      ? sheet.getRange(2, 3, sheet.getLastRow() - 1, 1).getValues().flat()
+      : [];
+    const alreadyJoined = existingEmails.map(String).map((value) => value.toLowerCase()).includes(email);
+
+    if (!alreadyJoined) {
+      sheet.appendRow([
+        body.createdAt || new Date().toISOString(),
+        body.name || "",
+        email,
+        body.source || "",
+        body.userAgent || "",
+      ]);
+    }
+
+    return json({ ok: true, alreadyJoined });
+  } catch (error) {
+    return json({ ok: false, error: String(error) });
+  }
+}
+```
+
+3. In Apps Script, add a script property named `WAITLIST_SECRET` with a random value.
+4. Deploy as a **Web app**, with access set to **Anyone**.
+5. In Vercel, set:
+
+```txt
+WAITLIST_WEBHOOK_URL=https://script.google.com/macros/s/your-deployment-id/exec
+WAITLIST_SECRET=the-same-random-value
+```
+
+If `WAITLIST_WEBHOOK_URL` is set, `/api/waitlist` posts to Google Sheets. If it is not set, it uses the local CSV fallback.
+
 ## Creating The Speech Engine
 
 Speech Engine needs a public WebSocket URL for the server.

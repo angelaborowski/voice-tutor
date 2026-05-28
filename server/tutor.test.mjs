@@ -9,7 +9,13 @@ import { localTutorReply, normalizeChatHistory } from "./tutor-content.mjs";
 import { PERSONALITIES } from "./tutor-data.mjs";
 import { localStudyNote, normalizeNote, parseJsonObject } from "./tutor-note.mjs";
 import { normalizePersonality, tutorInstructions } from "./tutor-prompts.mjs";
-import { addWaitlistEmail, normalizeWaitlistEmail, waitlistEntryToCsv } from "./waitlist.mjs";
+import {
+  addWaitlistEmail,
+  createWaitlistEntry,
+  normalizeWaitlistEmail,
+  postWaitlistWebhook,
+  waitlistEntryToCsv,
+} from "./waitlist.mjs";
 
 test("normalizes supported tutor personalities", () => {
   for (const personality of PERSONALITIES) {
@@ -21,7 +27,7 @@ test("normalizes supported tutor personalities", () => {
   assert.equal(normalizePersonality(null), null);
 });
 
-test("local tutor fallback gives subject-specific quiz prompts", () => {
+test("local tutor fallback gives subject-specific practice prompts", () => {
   const reply = localTutorReply("quiz me on photosynthesis", "athena");
 
   assert.match(reply, /photosynthesis/i);
@@ -136,6 +142,42 @@ test("adds waitlist emails once", async () => {
   assert.equal(csv.match(/hello@example.com/g)?.length, 1);
   assert.match(csv, /createdAt,email,name,source,userAgent/);
   assert.match(csv, /"Ada"/);
+});
+
+test("posts waitlist entries to webhook with shared secret", async () => {
+  const entry = createWaitlistEntry({
+    email: "Ada@Example.com",
+    name: "Ada",
+    source: "landing-want-in",
+    userAgent: "node-test",
+    now: new Date("2026-05-28T09:00:00.000Z"),
+  });
+
+  let request;
+  const result = await postWaitlistWebhook({
+    webhookUrl: "https://script.google.test/exec",
+    secret: "shared-secret",
+    entry,
+    fetchImpl: async (url, options) => {
+      request = { url, options };
+      return {
+        ok: true,
+        json: async () => ({ ok: true, alreadyJoined: false }),
+      };
+    },
+  });
+
+  assert.deepEqual(result, { ok: true, alreadyJoined: false });
+  assert.equal(request.url, "https://script.google.test/exec");
+  assert.equal(request.options.headers["Content-Type"], "text/plain;charset=utf-8");
+  assert.deepEqual(JSON.parse(request.options.body), {
+    secret: "shared-secret",
+    createdAt: "2026-05-28T09:00:00.000Z",
+    email: "ada@example.com",
+    name: "Ada",
+    source: "landing-want-in",
+    userAgent: "node-test",
+  });
 });
 
 function titleCase(value) {

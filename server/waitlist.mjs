@@ -22,8 +22,7 @@ export function waitlistEntryToCsv(entry) {
   ].map(escapeCsvValue).join(",");
 }
 
-export async function addWaitlistEmail({
-  filePath,
+export function createWaitlistEntry({
   email,
   name = "",
   source = "landing",
@@ -32,6 +31,61 @@ export async function addWaitlistEmail({
 }) {
   const normalizedEmail = normalizeWaitlistEmail(email);
   if (!normalizedEmail) {
+    return null;
+  }
+
+  return {
+    createdAt: now.toISOString(),
+    email: normalizedEmail,
+    name: String(name ?? "").trim(),
+    source,
+    userAgent,
+  };
+}
+
+export async function postWaitlistWebhook({
+  webhookUrl,
+  secret = "",
+  entry,
+  fetchImpl = fetch,
+}) {
+  if (!webhookUrl) {
+    return { ok: false, reason: "missing-webhook" };
+  }
+
+  const response = await fetchImpl(webhookUrl, {
+    method: "POST",
+    headers: { "Content-Type": "text/plain;charset=utf-8" },
+    body: JSON.stringify({
+      secret,
+      ...entry,
+    }),
+  });
+
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok || data?.ok === false) {
+    return {
+      ok: false,
+      reason: data?.error ?? `Webhook failed with status ${response.status}`,
+    };
+  }
+
+  return {
+    ok: true,
+    alreadyJoined: Boolean(data?.alreadyJoined),
+  };
+}
+
+export async function addWaitlistEmail({
+  filePath,
+  email,
+  name = "",
+  source = "landing",
+  userAgent = "",
+  now = new Date(),
+}) {
+  const entry = createWaitlistEntry({ email, name, source, userAgent, now });
+  if (!entry) {
     return { ok: false, reason: "invalid-email" };
   }
 
@@ -41,7 +95,7 @@ export async function addWaitlistEmail({
     if (error?.code === "ENOENT") return "";
     throw error;
   });
-  const alreadyJoined = existing.toLowerCase().includes(`"${normalizedEmail}"`);
+  const alreadyJoined = existing.toLowerCase().includes(`"${entry.email}"`);
 
   if (!alreadyJoined && existing.length === 0) {
     await appendFile(filePath, "createdAt,email,name,source,userAgent\n", "utf8");
@@ -50,16 +104,10 @@ export async function addWaitlistEmail({
   if (!alreadyJoined) {
     await appendFile(
       filePath,
-      `${waitlistEntryToCsv({
-        createdAt: now.toISOString(),
-        email: normalizedEmail,
-        name: String(name ?? "").trim(),
-        source,
-        userAgent,
-      })}\n`,
+      `${waitlistEntryToCsv(entry)}\n`,
       "utf8",
     );
   }
 
-  return { ok: true, email: normalizedEmail, alreadyJoined };
+  return { ok: true, email: entry.email, alreadyJoined };
 }

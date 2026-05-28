@@ -11,19 +11,26 @@ export const landingTutorPalettes: Array<[string, string]> = [
 ];
 export const landingTutorBackgroundHues = [0, 128, 214, 42, 272, 92, 18] as const;
 
-export type LandingInfoPageKey = "problem" | "tutors" | "pack";
+export type LandingInfoPageKey = "problem" | "tutors";
 export type TutorOption = {
   title: string;
   body: string;
   personality: AgentSettings["personality"];
   signal: string;
 };
+export type TutorPricingPlan = {
+  name: string;
+  price: string;
+  hours: string;
+  summary: string;
+  includes: string[];
+  featured?: boolean;
+};
 
 export const landingNavItems = [
   ["Start Chat", "01", "start"],
   ["The Problem", "02", "/problem"],
   ["Meet Tutors", "03", "/tutors"],
-  ["Study Pack", "04", "/study-pack"],
 ] as const;
 
 export const infoPages: Record<LandingInfoPageKey, {
@@ -35,8 +42,8 @@ export const infoPages: Record<LandingInfoPageKey, {
 }> = {
   problem: {
     kicker: "At home",
-    title: "Private tutoring works. The price is the problem.",
-    body: "One-to-one help is useful, but regular tutoring is still sold by the hour. The cost makes a weekly learning habit hard to keep.",
+    title: "The problem is access.",
+    body: "Private tutoring works, but it is expensive and usually booked by the hour. Students need help in smaller moments too: when homework gets stuck, when confidence drops, or when a question appears between sessions.",
     proof: ["voice practice", "lower monthly cost", "study support"],
     cards: [
       { title: "Price", body: "Regular help quickly becomes too expensive for ordinary homework nights." },
@@ -46,8 +53,8 @@ export const infoPages: Record<LandingInfoPageKey, {
   },
   tutors: {
     kicker: "Meet our tutors",
-    title: "Which one would you choose?",
-    body: "Swipe through the agents and pick the tutor that fits how you want to learn.",
+    title: "Who would you choose?",
+    body: "Swipe through our tutors and tap to hear how each one sounds.",
     proof: [],
     cards: [
       { title: "Athena", body: "The strategist: precise answer upgrades and stronger subject language." },
@@ -56,18 +63,6 @@ export const infoPages: Record<LandingInfoPageKey, {
       { title: "Socrates", body: "The questioner: guided discovery through one sharp question at a time." },
       { title: "Hestia", body: "The supportive tutor: gentle, low-pressure help when confidence is shaky." },
       { title: "Ares", body: "The challenger: direct drills and pressure tests for exam-ready answers." },
-    ],
-  },
-  pack: {
-    kicker: "Study Agent",
-    title: "The background agent keeps the work.",
-    body: "While the tutor teaches, Teach Me turns the conversation into notes, flashcards, quiz prompts, next actions, and a stronger answer.",
-    proof: ["notes", "gap cards", "quiz prompts", "model answer"],
-    cards: [
-      { title: "Clean Notes", body: "The messy conversation, cleaned into the points that matter." },
-      { title: "Gap Cards", body: "Facts, definitions, and weak spots you missed." },
-      { title: "Quick-Fire Quiz", body: "Short questions to test the answer again." },
-      { title: "Model Answer", body: "A sharper version, plus the next step to practise." },
     ],
   },
 };
@@ -94,9 +89,9 @@ export const problemCostStats = [
 ];
 
 export const problemCostComparison = [
-  { label: "Private tutor", value: "£40/hr", detail: "A simple midpoint from current UK tutoring ranges." },
-  { label: "Weekly habit", value: "£160/mo", detail: "One hour a week becomes four paid sessions every month." },
-  { label: "Teach Me", value: "from £9/mo", detail: "Voice practice, correction, and study outputs without booking an hourly slot." },
+  { label: "Private tutor", value: "£40/hr", detail: "A typical hour of one-to-one help." },
+  { label: "Weekly tutor", value: "£160/mo", detail: "One hour a week, four times a month." },
+  { label: "Teach Me", value: "from £29/mo", detail: "Weekly AI tutor access without booking a private hour." },
 ] as const;
 
 export const problemLifestyleEquivalents = [
@@ -106,17 +101,10 @@ export const problemLifestyleEquivalents = [
 ] as const;
 
 export const problemAccessTiers = [
-  { label: "Light", price: "£9/mo", access: "~60 voice minutes", note: "Quick homework check-ins, spoken correction, and session notes." },
-  { label: "Core", price: "£15/mo", access: "~120 voice minutes", note: "Regular weekly practice with notes, flashcards, quizzes, and next steps." },
-  { label: "Sprint", price: "£25/mo", access: "~240 voice minutes", note: "Revision bursts before a deadline, with more room for repeated practice." },
+  { label: "Starter", price: "£29/mo", access: "1 hr/week", note: "A weekly homework reset with spoken correction and session notes." },
+  { label: "Core", price: "£79/mo", access: "3 hrs/week", note: "Regular subject support with revision plans, quizzes, and weak-spot tracking." },
+  { label: "Exam", price: "£149/mo", access: "6 hrs/week", note: "Revision bursts before a deadline, with more room for repeated practice." },
 ] as const;
-
-export const studyPackArtifacts = [
-  ["Extracted", "clean notes"],
-  ["Weak spots", "gap cards"],
-  ["Recall", "quick-fire quiz"],
-  ["Target", "model answer"],
-];
 
 export const problemLoopSteps = [
   ["01", "Read"],
@@ -161,6 +149,31 @@ export const tutorOptions: TutorOption[] = [
     body: "Direct drills and pressure tests.",
     personality: "ares",
     signal: "challenge",
+  },
+];
+
+export const tutorPricingPlans: TutorPricingPlan[] = [
+  {
+    name: "Starter",
+    price: "£29/mo",
+    hours: "1 tutor hour/week",
+    summary: "For a weekly homework reset, confidence, and study rhythm.",
+    includes: ["All 6 tutors", "Voice lessons", "Session summaries"],
+  },
+  {
+    name: "Core",
+    price: "£79/mo",
+    hours: "3 tutor hours/week",
+    summary: "The main plan for regular support across subjects and revision.",
+    includes: ["All 6 tutors", "Revision plans", "Quizzes and weak spots"],
+    featured: true,
+  },
+  {
+    name: "Exam",
+    price: "£149/mo",
+    hours: "6 tutor hours/week",
+    summary: "For exam season, pressure practice, and deeper feedback loops.",
+    includes: ["All 6 tutors", "Practice tests", "Detailed study plans"],
   },
 ];
 

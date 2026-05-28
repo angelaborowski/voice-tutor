@@ -28,7 +28,7 @@
 
 .thread-shell:not(.thread-shell--fresh) .thread {
   position: absolute;
-  top: clamp(6.8rem, 12vh, 8.2rem);
+  top: clamp(8.2rem, 15vh, 9.5rem);
   right: 0;
   bottom: clamp(1.2rem, 3vh, 2rem);
   left: 0;
@@ -251,12 +251,12 @@
   box-shadow: none;
 }
 
-.thread__message--tutor .thread__bubble span,
+.thread__message--tutor .thread__bubble > span,
 .thread__message--tutor .thread__bubble time {
   color: rgba(255, 255, 255, 0.46);
 }
 
-.thread__bubble span {
+.thread__bubble > span {
   display: flex;
   align-items: center;
   gap: 0.42rem;
@@ -265,7 +265,7 @@
   font-weight: var(--studio-weight-label);
 }
 
-.thread__message--student .thread__bubble span {
+.thread__message--student .thread__bubble > span {
   justify-content: flex-end;
 }
 
@@ -300,6 +300,8 @@
 
 .thread__response .katex {
   font-size: 1.02em;
+  margin-inline: 0.04em;
+  white-space: nowrap;
 }
 
 .thread__response .katex-display {

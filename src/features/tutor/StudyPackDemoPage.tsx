@@ -194,7 +194,7 @@ const demoStudyNote: StudyNote = {
 };
 
 export function StudyPackDemoPage() {
-  const [activeTab, setActiveTab] = useState<StudyPackTab>("flashcards");
+  const [activeTab, setActiveTab] = useState<StudyPackTab>("summary");
 
   return (
     <main className="study-pack-demo workspace workspace--aurora">

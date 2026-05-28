@@ -8,6 +8,17 @@
     align-items: flex-start;
   }
 
+  .landing__chrome-actions {
+    gap: 0.46rem;
+  }
+
+  .landing__waitlist-link {
+    right: max(0.95rem, env(safe-area-inset-right));
+    bottom: max(0.95rem, env(safe-area-inset-bottom));
+    min-height: 3rem;
+    padding-inline: 0.72rem;
+    font-size: 0.66rem;
+  }
 
   .sidenav__button {
     min-width: 6.8rem;
@@ -101,6 +112,7 @@
 
   .landing__story > p:not(.landing__eyebrow) {
     max-width: 21.5rem;
+    margin-bottom: clamp(1.35rem, 5vw, 2.05rem);
     font-size: clamp(0.95rem, 4vw, 1.04rem);
     line-height: 1.45;
   }
@@ -226,7 +238,8 @@
   }
 
   .landing__problem-cost-grid,
-  .landing__problem-solution > div {
+  .landing__problem-solution > div,
+  .landing__tutor-pricing-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
@@ -242,12 +255,21 @@
     right: -1.2rem;
   }
 
+  .landing__problem-teach-track {
+    grid-template-columns: 1fr;
+    gap: 0.65rem;
+  }
+
   .landing__problem-equivalents {
     grid-template-columns: 1fr;
   }
 
   .landing__problem-price-card {
     min-height: 13.2rem;
+  }
+
+  .landing__tutor-price-card {
+    min-height: 15.6rem;
   }
 
   .landing__problem-price-card strong {
@@ -335,6 +357,7 @@
   }
 
   .landing__story > p:not(.landing__eyebrow) {
+    margin-bottom: 1.1rem;
     font-size: 0.89rem;
     line-height: 1.34;
   }
@@ -347,6 +370,18 @@
   }
 }
 
+@media (max-width: 430px) {
+  .landing__waitlist-link span {
+    display: none;
+  }
+
+  .landing__waitlist-link {
+    width: 3rem;
+    justify-content: center;
+    padding-inline: 0;
+  }
+}
+
 @media (max-width: 620px) {
   .landing__section--problem .landing__problem-evidence {
     grid-template-columns: 1fr;
@@ -354,7 +389,8 @@
 
   .landing__problem-cost-grid,
   .landing__problem-equivalents > div,
-  .landing__problem-solution > div {
+  .landing__problem-solution > div,
+  .landing__tutor-pricing-grid {
     grid-template-columns: 1fr;
   }
 
@@ -365,12 +401,26 @@
     transform: translateX(50%) rotate(90deg);
   }
 
+  .landing__problem-cost-head,
+  .landing__problem-cost-total {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .landing__problem-cost-segments {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .landing__section--problem .landing__insight-grid {
     grid-template-columns: 1fr;
   }
 
   .landing__problem-price-card {
     min-height: 11.8rem;
+  }
+
+  .landing__tutor-price-card {
+    min-height: auto;
   }
 
   .landing__problem-price-card strong {

@@ -62,6 +62,13 @@ export function StudyPackDrawer({
   const activeCard = flashcards[activeCardIndex];
   const activeQuizItem = quizItems[activeQuizIndex];
   const activeKeyword = keyTerms[activeKeywordIndex];
+  const flashcardMarkedCount = Object.keys(flashcardMarks).length;
+  const flashcardAgainCount = Object.values(flashcardMarks).filter((rating) => rating === "again").length;
+  const flashcardGoodCount = Object.values(flashcardMarks).filter((rating) => rating === "good").length;
+  const flashcardEasyCount = Object.values(flashcardMarks).filter((rating) => rating === "easy").length;
+  const quizAnsweredCount = Object.keys(quizMarks).length;
+  const quizCorrectCount = Object.values(quizMarks).filter(Boolean).length;
+  const isQuizComplete = quizItems.length > 0 && quizAnsweredCount === quizItems.length;
 
   useEffect(() => {
     setActiveCardIndex(0);
@@ -184,6 +191,22 @@ export function StudyPackDrawer({
                   </ol>
                 </div>
 
+                {note.gaps.length > 0 && (
+                  <div className="study-pack-note__block">
+                    <h3>Watch-outs</h3>
+                    <ul className="study-pack-note__watchouts">
+                      {note.gaps.map((gap) => (
+                        <li key={gap}>{gap}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                <div className="study-pack-note__block">
+                  <h3>Model answer</h3>
+                  <p className="study-pack-note__model">{note.modelAnswer}</p>
+                </div>
+
                 <div className="study-pack-note__block">
                   <h3>Key words</h3>
                   <div className="study-pack__terms">
@@ -214,7 +237,7 @@ export function StudyPackDrawer({
                   <header className="study-pack-keywords__header">
                     <span>Word bank</span>
                     <h2>Key terms</h2>
-                    <p>Tap a term to anchor it to the answer you practised.</p>
+                    <p>Terms from the conversation, shown with the sentence they belong to.</p>
                   </header>
 
                   <div className="study-pack-keyword-list" aria-label="Key word bank">
@@ -246,6 +269,11 @@ export function StudyPackDrawer({
                     <span>
                       Card {activeCardIndex + 1} of {flashcards.length}
                     </span>
+                    {flashcardMarkedCount > 0 && (
+                      <strong>
+                        {flashcardMarkedCount}/{flashcards.length} marked
+                      </strong>
+                    )}
                     {flashcardMarks[activeCardIndex] && (
                       <strong className={`is-${flashcardMarks[activeCardIndex]}`}>
                         {flashcardRatingLabel(flashcardMarks[activeCardIndex])}
@@ -321,6 +349,14 @@ export function StudyPackDrawer({
                     </button>
                   </div>
 
+                  {flashcardMarkedCount > 0 && (
+                    <div className="study-pack-flashcard__summary" aria-label="Flashcard rating summary">
+                      <span>{flashcardAgainCount} struggled</span>
+                      <span>{flashcardGoodCount} got it</span>
+                      <span>{flashcardEasyCount} easy</span>
+                    </div>
+                  )}
+
                   <div className="study-pack-practice__nav">
                     <button type="button" onClick={() => goToCard(-1)} aria-label="Previous flashcard">
                       <ChevronLeft size={17} />
@@ -357,6 +393,11 @@ export function StudyPackDrawer({
                     <span>
                       Question {activeQuizIndex + 1} of {quizItems.length}
                     </span>
+                    {quizAnsweredCount > 0 && (
+                      <strong className={isQuizComplete ? "is-correct" : ""}>
+                        {quizCorrectCount}/{quizAnsweredCount} so far
+                      </strong>
+                    )}
                     {typeof quizMarks[activeQuizIndex] === "boolean" && (
                       <strong className={quizMarks[activeQuizIndex] ? "is-correct" : "is-missed"}>
                         {quizMarks[activeQuizIndex] ? "Got it" : "Review"}
@@ -365,7 +406,7 @@ export function StudyPackDrawer({
                   </div>
 
                   <article className="study-pack-quiz__card">
-                    <h3>Recall</h3>
+                    <h3>Quick check</h3>
                     <p>{activeQuizItem.question}</p>
 
                     {revealedQuizAnswers.has(activeQuizIndex) ? (
@@ -393,6 +434,20 @@ export function StudyPackDrawer({
                       </div>
                     )}
                   </article>
+
+                  {isQuizComplete && (
+                    <div className="study-pack-quiz__score" aria-live="polite">
+                      <span>Final score</span>
+                      <strong>
+                        {quizCorrectCount}/{quizItems.length}
+                      </strong>
+                      <p>
+                        {quizCorrectCount === quizItems.length
+                          ? "Clean sweep. Move on to the flashcards."
+                          : "Review the missed questions, then try the quiz again."}
+                      </p>
+                    </div>
+                  )}
 
                   <div className="study-pack-practice__nav">
                     <button type="button" onClick={() => goToQuizItem(-1)} aria-label="Previous quiz question">
@@ -461,8 +516,8 @@ function LordIcon({ src }: { src: string }) {
     stroke: "bold",
     colors: "primary:#171211,secondary:#171211",
     style: {
-      width: "2.05rem",
-      height: "2.05rem",
+      width: "1.48rem",
+      height: "1.48rem",
     },
   });
 }

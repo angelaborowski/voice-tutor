@@ -21,7 +21,6 @@ export default function App() {
         <Route path="/" element={<LandingPage />} />
         <Route path="/problem" element={<LandingInfoPage page="problem" />} />
         <Route path="/tutors" element={<LandingInfoPage page="tutors" />} />
-        <Route path="/study-pack" element={<LandingInfoPage page="pack" />} />
         <Route path="/demo-pack" element={<StudyPackDemoPage />} />
         <Route path="/app" element={<VoiceTutorApp />} />
         <Route path="*" element={<LandingPage />} />

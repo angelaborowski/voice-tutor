@@ -29,7 +29,7 @@ export function buildLocalTutorReply(input: string, history: TutorMessage[], per
     normalized.includes("exam answer") ||
     normalized.includes("full answer") ||
     normalized.includes("mark scheme");
-  const asksForQuiz =
+  const asksForPractice =
     normalized.includes("quiz") ||
     normalized.includes("test me") ||
     normalized.includes("question me");
@@ -55,11 +55,11 @@ export function buildLocalTutorReply(input: string, history: TutorMessage[], per
   }
 
   if (isFiller) {
-    return `${opener} I didn’t catch an answer yet. Tell me the subject and level, or say “quiz me” and the topic.`;
+    return `${opener} I didn’t catch an answer yet. Tell me the subject or topic and we’ll start there.`;
   }
 
   if (isGreeting) {
-    return `${opener} What subject, level, and goal are we working on: explain, quiz, improve an answer, or build a learning pack?`;
+    return `${opener} What are we working on?`;
   }
 
   if (!topic) {
@@ -67,16 +67,16 @@ export function buildLocalTutorReply(input: string, history: TutorMessage[], per
     const genericTopic = inferGenericTopic(normalized);
     const specificReply = subject ? specificTutorReply(normalized, subject) : null;
 
-    if (asksForQuiz) {
+    if (asksForPractice) {
       if (subject) {
         return specificReply?.quiz ?? subject.quiz;
       }
 
       if (genericTopic !== "Study session") {
-        return genericQuizForTopic(genericTopic);
+        return genericPracticePromptForTopic(genericTopic);
       }
 
-      return "Absolutely. What subject, level, and topic should I quiz you on?";
+      return "Absolutely. What subject or topic should I test you on?";
     }
 
     if (asksForModel) {
@@ -100,7 +100,7 @@ export function buildLocalTutorReply(input: string, history: TutorMessage[], per
     }
 
     if (subject) {
-      return `I’ve got ${subject.label}. What level is this, and do you want me to explain it, quiz you, improve an answer, or make a learning pack?`;
+      return `I’ve got ${subject.label}. What level are we aiming at?`;
     }
 
     if (normalized.includes("surprise me")) {
@@ -108,18 +108,18 @@ export function buildLocalTutorReply(input: string, history: TutorMessage[], per
     }
 
     if (genericTopic !== "Study session") {
-      return `I’ve got ${genericTopic.toLowerCase()}. Do you want me to explain it, quiz you, or improve a rough answer?`;
+      return `I’ve got ${genericTopic.toLowerCase()}. What part feels most important to practise?`;
     }
 
     if (normalized.length < 24) {
-      return "Tell me the subject, level, and topic first, then choose: explain, quiz, improve an answer, or build a learning pack.";
+      return "Tell me the subject or topic and we’ll start there.";
     }
 
-    return "Got it. I’ll help you tighten that. What subject and level is this for, and do you want a quick explanation, quiz, or model answer?";
+    return "Got it. I’ll help you tighten that. What subject or topic is this for?";
   }
 
-  if (asksForQuiz) {
-    return `Let's do a quick check. ${topic.question}`;
+  if (asksForPractice) {
+    return `One check: ${topic.question}`;
   }
 
   if (asksForModel) {
@@ -165,8 +165,8 @@ function specificTutorReply(text: string, _subject: SubjectHint) {
   if (hasKeyword(text, "photosynthesis")) {
     return {
       explain:
-        "Photosynthesis is how plants use light energy to make glucose. The raw materials are carbon dioxide and water; chlorophyll in chloroplasts absorbs the light. Quick check: what are the two raw materials?",
-      quiz: "Quick photosynthesis check: what are the two raw materials, and what useful product does the plant make?",
+        "Photosynthesis is how plants use light energy to make glucose. The raw materials are carbon dioxide and water; chlorophyll in chloroplasts absorbs the light. One check: what are the two raw materials?",
+      quiz: "One photosynthesis check: what are the two raw materials, and what useful product does the plant make?",
       modelAnswer:
         "Photosynthesis uses light energy absorbed by chlorophyll in chloroplasts to convert carbon dioxide and water into glucose and oxygen.",
     };
@@ -176,7 +176,7 @@ function specificTutorReply(text: string, _subject: SubjectHint) {
     return {
       explain:
         "A quadratic has an x squared term. First decide the method: factorise, formula, or complete the square. If it looks like x² + 5x + 6, find two numbers that multiply to 6 and add to 5. What are they?",
-      quiz: "Quick quadratic check: in x² + 5x + 6, which two numbers multiply to 6 and add to 5?",
+      quiz: "One quadratic check: in x² + 5x + 6, which two numbers multiply to 6 and add to 5?",
       modelAnswer:
         "To solve a factorisable quadratic, put it equal to zero, find two numbers that multiply to the constant and add to the x coefficient, factorise, then set each bracket to zero.",
     };
@@ -186,7 +186,7 @@ function specificTutorReply(text: string, _subject: SubjectHint) {
     return {
       explain:
         "Product strategy is choosing which user problem to solve, why it matters now, and what trade-offs you will make. Start with user, problem, bet, metric. Who is the user?",
-      quiz: "Quick strategy check: who is the user, what problem hurts, and what metric proves the bet worked?",
+      quiz: "One strategy check: who is the user, what problem hurts, and what metric proves the bet worked?",
       modelAnswer:
         "A clear product strategy names the target user, the painful problem, the bet you are making, the trade-offs you accept, and the metric that will show progress.",
     };
@@ -196,7 +196,7 @@ function specificTutorReply(text: string, _subject: SubjectHint) {
     return {
       explain:
         "For a History source, use three checks: content, provenance, and purpose. Say what it shows, who made it, and why that affects usefulness. What does the source actually say?",
-      quiz: "Quick source check: what does the source show, who made it, and why might that matter?",
+      quiz: "One source check: what does the source show, who made it, and why might that matter?",
       modelAnswer:
         "A strong source answer uses content, provenance, and purpose to judge usefulness, then links that judgement back to the question.",
     };
@@ -206,7 +206,7 @@ function specificTutorReply(text: string, _subject: SubjectHint) {
     return {
       explain:
         "For an English answer, use point, evidence, method, effect. Pick one word from the quote, name the method if you can, then explain the effect on the reader. Which word feels most important?",
-      quiz: "Quick English check: what is your point, what quote proves it, and which word will you analyse?",
+      quiz: "One English check: what is your point, what quote proves it, and which word will you analyse?",
       modelAnswer:
         "A strong English paragraph makes a clear point, embeds a short quote, analyses a specific word or method, and links the effect back to the question.",
     };
@@ -216,7 +216,7 @@ function specificTutorReply(text: string, _subject: SubjectHint) {
     return {
       explain:
         "For coding, say the input, the transformation, and the output. In Python, a function is a reusable block that takes values and returns a result. What should your function receive?",
-      quiz: "Quick coding check: what is the input, what should happen to it, and what output should come back?",
+      quiz: "One coding check: what is the input, what should happen to it, and what output should come back?",
       modelAnswer:
         "A strong coding explanation names the input, walks through the logic step by step, and checks the output with one example.",
     };
@@ -262,36 +262,36 @@ function modelAnswerForTopic(topicId: string) {
   return chemistryTopic.checklist.join(" ");
 }
 
-function genericQuizForTopic(topicName: string) {
+function genericPracticePromptForTopic(topicName: string) {
   if (topicName === "Biology practice") {
-    return "Absolutely. Quick biology check: in photosynthesis, what two raw materials does the plant need to make glucose?";
+    return "Absolutely. One biology check: in photosynthesis, what two raw materials does the plant need to make glucose?";
   }
 
   if (topicName === "Maths practice") {
-    return "Absolutely. Quick maths check: what is the first step you would take to solve this type of problem?";
+    return "Absolutely. One maths check: what is the first step you would take to solve this type of problem?";
   }
 
   if (topicName === "History practice") {
-    return "Absolutely. Quick history check: can you name one cause, one event, and one consequence for this topic?";
+    return "Absolutely. One history check: can you name one cause, one event, and one consequence for this topic?";
   }
 
   if (topicName === "Physics practice") {
-    return "Absolutely. Quick physics check: what key equation, force, or energy transfer is involved here?";
+    return "Absolutely. One physics check: what key equation, force, or energy transfer is involved here?";
   }
 
   if (topicName === "English practice") {
-    return "Absolutely. Quick English check: what quote or technique would you use as your evidence?";
+    return "Absolutely. One English check: what quote or technique would you use as your evidence?";
   }
 
   if (topicName === "Coding practice") {
-    return "Absolutely. Quick coding check: what should the program receive, do, and return?";
+    return "Absolutely. One coding check: what should the program receive, do, and return?";
   }
 
   if (topicName === "Business practice") {
-    return "Absolutely. Quick business check: who is the user, what problem do they have, and what choice are you making?";
+    return "Absolutely. One business check: who is the user, what problem do they have, and what choice are you making?";
   }
 
-  return `Absolutely. Quick check on ${topicName.toLowerCase()}: what is the key idea in one sentence?`;
+  return `Absolutely. One check on ${topicName.toLowerCase()}: what is the key idea in one sentence?`;
 }
 function inferGenericTopic(transcript: string) {
   if (transcript.includes("math") || transcript.includes("quadratic") || transcript.includes("equation")) {

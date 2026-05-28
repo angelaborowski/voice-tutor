@@ -53,3 +53,48 @@ textarea {
 button {
   cursor: pointer;
 }
+
+.shimmering-text {
+  color: var(--shimmer-base-color, var(--muted-foreground));
+  contain: paint;
+  display: inline-block;
+  min-width: max-content;
+  overflow: hidden;
+  position: relative;
+}
+
+.shimmering-text::after {
+  animation: shimmering-text-mask var(--shimmer-cycle-duration, 2.5s) linear var(--shimmer-delay, 0s) var(--shimmer-iteration-count, infinite);
+  animation-play-state: paused;
+  color: var(--shimmer-highlight-color, var(--foreground));
+  content: attr(data-shimmer-text);
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 44%, #000 56%, transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0%, #000 44%, #000 56%, transparent 100%);
+  -webkit-mask-position: calc(0px - var(--shimmer-mask-width, 96px)) 50%;
+  mask-position: calc(0px - var(--shimmer-mask-width, 96px)) 50%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: var(--shimmer-mask-width, 96px) 100%;
+  mask-size: var(--shimmer-mask-width, 96px) 100%;
+  will-change: mask-position;
+}
+
+.shimmering-text.is-animated::after {
+  animation-play-state: running;
+}
+
+@keyframes shimmering-text-mask {
+  0% {
+    -webkit-mask-position: calc(0px - var(--shimmer-mask-width, 96px)) 50%;
+    mask-position: calc(0px - var(--shimmer-mask-width, 96px)) 50%;
+  }
+
+  78%,
+  100% {
+    -webkit-mask-position: calc(100% + var(--shimmer-mask-width, 96px)) 50%;
+    mask-position: calc(100% + var(--shimmer-mask-width, 96px)) 50%;
+  }
+}

@@ -1,6 +1,8 @@
-import { useMemo, useRef } from "react";
+import { LoaderCircle, Volume2, VolumeX } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { Orb } from "@/components/ui/orb";
+import { fetchTutorPreviewAudio } from "@/features/tutor/api/client";
 import { personalityColors, type AgentSettings } from "@/features/tutor/domain/settings";
 import { Draggable, gsap, useGSAP } from "@/lib/gsap";
 import { tutorOptions } from "./data";
@@ -18,6 +20,12 @@ export function TutorFlickDeck({
   onSelect: (personality: AgentSettings["personality"]) => void;
 }) {
   const deckRef = useRef<HTMLDivElement | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const audioUrlRef = useRef<string | null>(null);
+  const abortRef = useRef<AbortController | null>(null);
+  const [loadingPreview, setLoadingPreview] = useState<AgentSettings["personality"] | null>(null);
+  const [playingPreview, setPlayingPreview] = useState<AgentSettings["personality"] | null>(null);
+  const [previewError, setPreviewError] = useState<AgentSettings["personality"] | null>(null);
   const flickCards = useMemo(
     () =>
       Array.from({ length: tutorOptions.length }, (_, index) => ({
@@ -26,6 +34,65 @@ export function TutorFlickDeck({
       })),
     [],
   );
+
+  useEffect(() => () => {
+    abortRef.current?.abort();
+    audioRef.current?.pause();
+    if (audioUrlRef.current) {
+      URL.revokeObjectURL(audioUrlRef.current);
+    }
+  }, []);
+
+  function stopPreview() {
+    abortRef.current?.abort();
+    abortRef.current = null;
+    audioRef.current?.pause();
+    audioRef.current = null;
+    if (audioUrlRef.current) {
+      URL.revokeObjectURL(audioUrlRef.current);
+      audioUrlRef.current = null;
+    }
+    setLoadingPreview(null);
+    setPlayingPreview(null);
+  }
+
+  async function handlePreviewClick(personality: AgentSettings["personality"]) {
+    onSelect(personality);
+    setPreviewError(null);
+
+    if (playingPreview === personality || loadingPreview === personality) {
+      stopPreview();
+      return;
+    }
+
+    stopPreview();
+    const abortController = new AbortController();
+    abortRef.current = abortController;
+    setLoadingPreview(personality);
+
+    try {
+      const audioBlob = await fetchTutorPreviewAudio(personality);
+      if (abortController.signal.aborted) return;
+
+      const audioUrl = URL.createObjectURL(audioBlob);
+      const audio = new Audio(audioUrl);
+      audioRef.current = audio;
+      audioUrlRef.current = audioUrl;
+      audio.addEventListener("ended", stopPreview, { once: true });
+      audio.addEventListener("error", () => {
+        setPreviewError(personality);
+        stopPreview();
+      }, { once: true });
+      setLoadingPreview(null);
+      setPlayingPreview(personality);
+      await audio.play();
+    } catch {
+      if (!abortController.signal.aborted) {
+        setPreviewError(personality);
+      }
+      stopPreview();
+    }
+  }
 
   useGSAP((_, contextSafe) => {
     const slider = deckRef.current;
@@ -221,10 +288,22 @@ export function TutorFlickDeck({
                     <span className="landing__mode-card-signal">{mode.signal}</span>
                     <div className="landing__mode-card-orb" aria-hidden="true">
                       <Orb
-                        agentState={selectedMode === mode.personality ? "talking" : "listening"}
+                        agentState={
+                          selectedMode === mode.personality || playingPreview === mode.personality
+                            ? "talking"
+                            : "listening"
+                        }
                         colors={personalityColors[mode.personality]}
-                        manualInput={selectedMode === mode.personality ? 0.74 : 0.46}
-                        manualOutput={selectedMode === mode.personality ? 0.84 : 0.58}
+                        manualInput={
+                          selectedMode === mode.personality || playingPreview === mode.personality
+                            ? 0.74
+                            : 0.46
+                        }
+                        manualOutput={
+                          selectedMode === mode.personality || playingPreview === mode.personality
+                            ? 0.84
+                            : 0.58
+                        }
                         seed={(mode.title.length + 3) * 193}
                         volumeMode="manual"
                         className="landing__orb-canvas"
@@ -232,6 +311,32 @@ export function TutorFlickDeck({
                     </div>
                     <strong>{mode.title}</strong>
                     <p>{mode.body}</p>
+                  </button>
+                  <button
+                    type="button"
+                    className="landing__mode-card-preview"
+                    aria-label={
+                      playingPreview === mode.personality || loadingPreview === mode.personality
+                        ? `Stop ${mode.title} voice preview`
+                        : `Play ${mode.title} voice preview`
+                    }
+                    title={
+                      previewError === mode.personality
+                        ? "Voice preview unavailable"
+                        : `${mode.title} voice`
+                    }
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      void handlePreviewClick(mode.personality);
+                    }}
+                  >
+                    {loadingPreview === mode.personality ? (
+                      <LoaderCircle size={15} aria-hidden="true" />
+                    ) : playingPreview === mode.personality ? (
+                      <VolumeX size={15} aria-hidden="true" />
+                    ) : (
+                      <Volume2 size={15} aria-hidden="true" />
+                    )}
                   </button>
                 </div>
               </div>

@@ -1,4 +1,4 @@
-import { ChevronRight, MailPlus } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { useEffect, useRef, useState, type CSSProperties, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -12,7 +12,9 @@ export function LandingPage() {
   const navigate = useNavigate();
   const landingRef = useRef<HTMLElement | null>(null);
   const waitlistNameInputRef = useRef<HTMLInputElement | null>(null);
+  const startTransitionRef = useRef(false);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [isStarting, setIsStarting] = useState(false);
   const [isWaitlistModalOpen, setIsWaitlistModalOpen] = useState(false);
   const [waitlistName, setWaitlistName] = useState("");
   const [waitlistEmail, setWaitlistEmail] = useState("");
@@ -138,6 +140,41 @@ export function LandingPage() {
   }, { scope: landingRef });
 
   useGSAP(() => {
+    if (!isLoaded) return;
+
+    const root = landingRef.current;
+    if (!root) return;
+
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const revealElements = Array.from(root.querySelectorAll<HTMLElement>("[data-hero-reveal]"));
+    const cta = root.querySelector<HTMLElement>("[data-hero-cta]");
+
+    if (prefersReducedMotion) {
+      gsap.set([...revealElements, cta].filter(Boolean), { autoAlpha: 1 });
+      return;
+    }
+
+    gsap.timeline({ defaults: { ease: "power3.out" } })
+      .fromTo(revealElements, {
+        autoAlpha: 0,
+        y: 18,
+      }, {
+        autoAlpha: 1,
+        y: 0,
+        duration: 0.42,
+        stagger: 0.08,
+      })
+      .fromTo(cta, {
+        autoAlpha: 0,
+        y: 10,
+      }, {
+        autoAlpha: 1,
+        y: 0,
+        duration: 0.32,
+      }, "-=0.16");
+  }, { scope: landingRef, dependencies: [isLoaded], revertOnUpdate: true });
+
+  useGSAP(() => {
     const root = landingRef.current;
     const buttons = root?.querySelectorAll<HTMLElement>("[data-button-057]");
     if (!buttons?.length) return;
@@ -227,7 +264,45 @@ export function LandingPage() {
   }, { scope: landingRef });
 
   const handleStart = () => {
-    navigate("/app");
+    if (startTransitionRef.current) return;
+
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const wrap = landingRef.current?.querySelector<HTMLElement>("[data-load-wrap]");
+    if (prefersReducedMotion || !wrap) {
+      navigate("/app");
+      return;
+    }
+
+    startTransitionRef.current = true;
+    setIsStarting(true);
+    setIsWaitlistModalOpen(false);
+
+    const bg = wrap.querySelector("[data-load-bg]");
+    const container = wrap.querySelector("[data-load-container]");
+    const progressBar = wrap.querySelector("[data-load-progress]");
+    const orb = wrap.querySelector("[data-load-orb]");
+    const exitText = wrap.querySelector("[data-load-exit]");
+
+    CustomEase.create("voiceLoader", "0.65, 0.01, 0.05, 0.99");
+
+    gsap.timeline({
+      defaults: {
+        ease: "voiceLoader",
+      },
+      onComplete: () => navigate("/app"),
+    })
+      .set(wrap, { display: "grid", autoAlpha: 1 })
+      .set(bg, { yPercent: 0, autoAlpha: 0 })
+      .set(progressBar, { scaleX: 0, transformOrigin: "left center" })
+      .set(container, { autoAlpha: 0, scale: 0.94 })
+      .set(orb, { scale: 0.82, autoAlpha: 0 })
+      .set(exitText, { autoAlpha: 0, yPercent: 38 })
+      .to(bg, { autoAlpha: 1, duration: 0.75 }, 0)
+      .to(container, { autoAlpha: 1, scale: 1, duration: 0.82 }, 0.14)
+      .to(orb, { scale: 1, autoAlpha: 1, duration: 0.82 }, 0.14)
+      .to(exitText, { autoAlpha: 1, yPercent: 0, duration: 0.55 }, 0.34)
+      .to(progressBar, { scaleX: 1, duration: 1.25 }, 0.26)
+      .to(container, { autoAlpha: 0.84, scale: 0.985, duration: 0.24 }, 1.28);
   };
 
   const handleWaitlistSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -236,7 +311,7 @@ export function LandingPage() {
     const email = waitlistEmail.trim();
     if (!name || !email) {
       setWaitlistStatus("error");
-      setWaitlistMessage("Enter your name and email to join the early access list.");
+      setWaitlistMessage("Enter your name and email to get first access.");
       return;
     }
 
@@ -247,7 +322,7 @@ export function LandingPage() {
       const response = await fetch("/api/waitlist", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, source: "landing-hero" }),
+        body: JSON.stringify({ name, email, source: "landing-want-in" }),
       });
       const data = (await response.json().catch(() => ({}))) as { message?: string; error?: string };
 
@@ -268,7 +343,7 @@ export function LandingPage() {
   return (
     <main
       ref={landingRef}
-      className={`landing ${isLoaded ? "is-loaded" : "is-loading"}`}
+      className={`landing ${isLoaded ? "is-loaded" : "is-loading"} ${isStarting ? "is-starting" : ""}`}
       style={{
         "--landing-orb-a": landingTutorColors[0],
         "--landing-orb-b": landingTutorColors[1],
@@ -276,7 +351,7 @@ export function LandingPage() {
       aria-labelledby="landing-title"
     >
       <LandingBackground hueShift={landingTutorBackgroundHue} />
-      <div data-load-wrap className="loader" aria-hidden={isLoaded}>
+      <div data-load-wrap className="loader" aria-hidden={isLoaded && !isStarting}>
         <div data-load-bg className="loader__bg">
           <div data-load-progress className="loader__bg-bar" />
         </div>
@@ -296,6 +371,7 @@ export function LandingPage() {
           <div className="loader__text-wrap">
             <span data-load-text className="loader__text-el">Hold tight</span>
             <span data-load-text className="loader__text-el">Preparing your tutor</span>
+            <span data-load-exit className="loader__exit-text">Starting your session</span>
           </div>
         </div>
       </div>
@@ -321,16 +397,19 @@ export function LandingPage() {
         </div>
 
         <div className="landing__story">
-          <h1 id="landing-title">Your tutor, on demand.</h1>
-          <p>
-            Practise any subject out loud. Teach Me adapts as you speak, then turns each session
-            into notes, flashcards, quizzes, and more.
+          <h1 id="landing-title" data-hero-reveal>Your tutor, on demand.</h1>
+          <p data-hero-reveal>
+            Say what you know. Teach Me finds the gaps, guides the lesson, and leaves you with
+            notes, flashcards, quizzes, and next steps.
           </p>
           <button
             type="button"
             className="landing__cta button-005"
             data-button-005
+            data-hero-cta
             onClick={handleStart}
+            aria-label="Let's talk"
+            disabled={isStarting}
           >
             <span className="button-005__text-wrap">
               <span className="button-005__text is--default">
@@ -376,7 +455,10 @@ export function LandingPage() {
             <form className="modal__content" onSubmit={handleWaitlistSubmit}>
               <div className="modal__intro">
                 <h2 id="waitlist-modal-title" className="modal__h2">Get first access.</h2>
-                <p className="modal__note">We'll send you an email when teachme.io is ready.</p>
+                <p className="modal__note">
+                  Be the first to try Teach Me when the demo opens up. We'll only use this to send
+                  access and launch updates.
+                </p>
               </div>
               <label className="modal__field">
                 <span>Your name</span>

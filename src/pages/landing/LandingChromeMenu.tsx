@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { CustomEase, gsap, useGSAP } from "@/lib/gsap";
 import { landingNavItems } from "./data";
 
-export function LandingChromeMenu({ onStart, onWaitlist }: { onStart: () => void; onWaitlist: () => void }) {
+export function LandingChromeMenu({ onStart, onWaitlist }: { onStart: () => void; onWaitlist?: () => void }) {
   const navigate = useNavigate();
   const navRef = useRef<HTMLDivElement | null>(null);
   const sidenavTimelineRef = useRef<gsap.core.Timeline | null>(null);
@@ -110,11 +110,11 @@ export function LandingChromeMenu({ onStart, onWaitlist }: { onStart: () => void
           <button
             type="button"
             className="landing__waitlist-link"
-            onClick={onWaitlist}
-            aria-label="Join the Teach Me early list"
+            onClick={onWaitlist ?? (() => navigate("/"))}
+            aria-label="Get first access to Teach Me"
           >
             <MailPlus size={16} strokeWidth={2.2} />
-            <span>Early list</span>
+            <span>Want in?</span>
           </button>
           <button
             type="button"

@@ -17,7 +17,7 @@ import {
   normalizePersonality,
   tutorInstructions,
 } from "./tutor-prompts.mjs";
-import { addWaitlistEmail } from "./waitlist.mjs";
+import { addWaitlistEmail, createWaitlistEntry, postWaitlistWebhook } from "./waitlist.mjs";
 
 const PORT = Number(process.env.PORT ?? 3001);
 const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN ?? "http://127.0.0.1:5174";
@@ -26,7 +26,31 @@ const ELEVENLABS_SPEECH_ENGINE_ID = process.env.ELEVENLABS_SPEECH_ENGINE_ID;
 const SPEECH_ENGINE_DEBUG = process.env.SPEECH_ENGINE_DEBUG === "true";
 const WAITLIST_PATH = process.env.WAITLIST_PATH
   ?? fileURLToPath(new URL("../data/waitlist.csv", import.meta.url));
+const WAITLIST_WEBHOOK_URL = process.env.WAITLIST_WEBHOOK_URL;
+const WAITLIST_SECRET = process.env.WAITLIST_SECRET ?? "";
 let currentPersonality = "athena";
+
+const tutorPreviewLines = {
+  athena: "I'm Athena. Let's sharpen the answer with precise subject language and one clear missing link.",
+  apollo: "I'm Apollo. I'll make the idea clearer first, then check it with one simple question.",
+  hermes: "I'm Hermes. Quick round: I'll keep the pace up and help the answer stick.",
+  socrates: "I'm Socrates. Let's reason it out together, one careful question at a time.",
+  hestia: "I'm Hestia. No pressure. We'll take one small step, then build confidence from there.",
+  ares: "I'm Ares. Ready. I'll pressure-test your answer and drill the weak spots until it holds.",
+};
+
+const tutorVoiceIds = {
+  athena: process.env.VITE_TEACHME_VOICE_ATHENA
+    ?? process.env.VITE_OUTLOUD_VOICE_ATHENA
+    ?? "uIZsnBL0YK1S5j69bAih",
+  apollo: process.env.VITE_TEACHME_VOICE_APOLLO ?? process.env.VITE_OUTLOUD_VOICE_APOLLO,
+  hermes: process.env.VITE_TEACHME_VOICE_HERMES ?? process.env.VITE_OUTLOUD_VOICE_HERMES,
+  socrates: process.env.VITE_TEACHME_VOICE_SOCRATES ?? process.env.VITE_OUTLOUD_VOICE_SOCRATES,
+  hestia: process.env.VITE_TEACHME_VOICE_HESTIA ?? process.env.VITE_OUTLOUD_VOICE_HESTIA,
+  ares: process.env.VITE_TEACHME_VOICE_ARES ?? process.env.VITE_OUTLOUD_VOICE_ARES,
+};
+
+const tutorPreviewCache = new Map();
 
 const studyPackInstructions = `Return only valid JSON for a learning pack generated from a spoken tutoring transcript.
 It can be any subject and any level, so do not force school exam framing unless the transcript asks for it.
@@ -67,6 +91,21 @@ const elevenlabs = process.env.ELEVENLABS_API_KEY
   ? new ElevenLabsClient({ apiKey: process.env.ELEVENLABS_API_KEY })
   : null;
 
+async function readableStreamToBuffer(stream) {
+  const reader = stream.getReader();
+  const chunks = [];
+  let byteLength = 0;
+
+  while (true) {
+    const { value, done } = await reader.read();
+    if (done) break;
+    chunks.push(value);
+    byteLength += value.byteLength;
+  }
+
+  return Buffer.concat(chunks.map((chunk) => Buffer.from(chunk)), byteLength);
+}
+
 app.use(express.json({ limit: "1mb" }));
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", CLIENT_ORIGIN);
@@ -103,16 +142,31 @@ app.post("/api/personality", (req, res) => {
 
 app.post("/api/waitlist", async (req, res) => {
   try {
-    const result = await addWaitlistEmail({
-      filePath: WAITLIST_PATH,
+    const entry = createWaitlistEntry({
       email: req.body?.email,
       name: String(req.body?.name ?? "").slice(0, 120),
       source: String(req.body?.source ?? "landing").slice(0, 80),
       userAgent: String(req.get("user-agent") ?? "").slice(0, 240),
     });
 
-    if (!result.ok) {
+    if (!entry) {
       res.status(400).json({ error: "Please enter a valid email address." });
+      return;
+    }
+
+    const result = WAITLIST_WEBHOOK_URL
+      ? await postWaitlistWebhook({
+          webhookUrl: WAITLIST_WEBHOOK_URL,
+          secret: WAITLIST_SECRET,
+          entry,
+        })
+      : await addWaitlistEmail({
+          filePath: WAITLIST_PATH,
+          ...entry,
+        });
+
+    if (!result.ok) {
+      res.status(500).json({ error: "Could not save that email right now." });
       return;
     }
 
@@ -146,6 +200,49 @@ app.get("/api/token", async (_req, res) => {
   } catch (error) {
     console.error("Token error", error);
     res.status(500).json({ error: "Failed to create ElevenLabs token." });
+  }
+});
+
+app.get("/api/tutor-preview/:personality", async (req, res) => {
+  const personality = normalizePersonality(req.params.personality);
+  if (!personality) {
+    res.status(404).json({ error: "Unknown tutor." });
+    return;
+  }
+
+  const voiceId = tutorVoiceIds[personality]?.trim();
+  if (!elevenlabs || !voiceId) {
+    res.status(503).json({ error: "Voice preview is not configured for this tutor." });
+    return;
+  }
+
+  try {
+    const cacheKey = `${personality}:${voiceId}`;
+    let audioBuffer = tutorPreviewCache.get(cacheKey);
+
+    if (!audioBuffer) {
+      const audio = await elevenlabs.textToSpeech.convert(voiceId, {
+        text: tutorPreviewLines[personality],
+        modelId: "eleven_multilingual_v2",
+        outputFormat: "mp3_44100_128",
+        voiceSettings: {
+          stability: 0.58,
+          similarityBoost: 0.82,
+          style: personality === "hermes" || personality === "ares" ? 0.35 : 0.18,
+          useSpeakerBoost: true,
+        },
+      });
+
+      audioBuffer = await readableStreamToBuffer(audio);
+      tutorPreviewCache.set(cacheKey, audioBuffer);
+    }
+
+    res.setHeader("Content-Type", "audio/mpeg");
+    res.setHeader("Cache-Control", "no-store");
+    res.send(audioBuffer);
+  } catch (error) {
+    console.error("Tutor preview error", error);
+    res.status(500).json({ error: "Could not generate tutor preview." });
   }
 });
 

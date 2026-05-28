@@ -16,6 +16,12 @@
   gap: 1rem;
 }
 
+.landing__chrome-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.72rem;
+}
+
 .landing__logo {
   display: inline-flex;
   align-items: center;
@@ -61,6 +67,47 @@
 .landing__page-actions button:last-child {
   background: #ffffff;
   color: #171211;
+}
+
+.landing__waitlist-link {
+  position: fixed;
+  right: max(1.35rem, env(safe-area-inset-right));
+  bottom: max(1.25rem, env(safe-area-inset-bottom));
+  z-index: 22;
+  min-height: 2.65rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.48rem;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.9);
+  padding: 0 0.86rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 850;
+  letter-spacing: 0.05em;
+  line-height: 1;
+  text-transform: uppercase;
+  backdrop-filter: blur(16px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 1rem 2.8rem rgba(0, 0, 0, 0.18);
+  transition:
+    border-color 0.22s ease,
+    background 0.22s ease,
+    transform 0.22s ease;
+}
+
+.landing__waitlist-link:hover {
+  border-color: rgba(255, 255, 255, 0.34);
+  background: rgba(255, 255, 255, 0.14);
+  transform: translateY(-1px);
+}
+
+.landing__waitlist-link:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 4px;
 }
 
 .sidenav__button {
@@ -246,4 +293,3 @@
   font-weight: 850;
   letter-spacing: 0.04em;
 }
-

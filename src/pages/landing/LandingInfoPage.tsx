@@ -1,13 +1,11 @@
-import { ChevronRight, Home, MessageCircle } from "lucide-react";
 import { useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { syncTutorPersonality } from "@/features/tutor/api/client";
 import { AGENT_SETTINGS_STORAGE_KEY, readAgentSettings, type AgentSettings } from "@/features/tutor/domain/settings";
-import { infoPages, tutorPersonalities, type LandingInfoPageKey } from "./data";
+import { infoPages, tutorPersonalities, tutorPricingPlans, type LandingInfoPageKey } from "./data";
 import { LandingBackground } from "./LandingBackground";
 import { LandingChromeMenu } from "./LandingChromeMenu";
-import { ProblemCostBreakdown, StudyPackPreview } from "./LandingPreviews";
 import { TutorFlickDeck } from "./TutorFlickDeck";
 
 export function LandingInfoPage({ page }: { page: LandingInfoPageKey }) {
@@ -17,12 +15,6 @@ export function LandingInfoPage({ page }: { page: LandingInfoPageKey }) {
     const storedPersonality = readAgentSettings().personality;
     return tutorPersonalities.includes(storedPersonality) ? storedPersonality : "athena";
   });
-  const cardClassName = page === "problem"
-    ? "landing__insight-grid"
-    : page === "tutors"
-      ? "landing__mode-grid"
-      : "landing__pack-grid";
-
   const handleSelectMode = useCallback((personality: AgentSettings["personality"]) => {
     const current = readAgentSettings();
     const next = {
@@ -42,10 +34,10 @@ export function LandingInfoPage({ page }: { page: LandingInfoPageKey }) {
   return (
     <main className="landing landing--page" aria-labelledby={`${page}-page-title`}>
       <LandingBackground />
-      <LandingChromeMenu onStart={handleStartChat} />
+      <LandingChromeMenu onStart={handleStartChat} onWaitlist={() => navigate("/")} />
 
       <section className={`landing__section landing__section--${page} landing__section--page`}>
-        {page !== "problem" && (
+        {page !== "problem" && page !== "tutors" && (
           <p className="landing__section-kicker">{content.kicker}</p>
         )}
         <div className="landing__section-copy">
@@ -58,37 +50,46 @@ export function LandingInfoPage({ page }: { page: LandingInfoPageKey }) {
               ))}
             </ul>
           )}
-          {page === "pack" && (
-            <div className="landing__section-actions">
-              <button type="button" className="landing__section-action is-primary" onClick={handleStartChat}>
-                <MessageCircle size={18} strokeWidth={2.2} aria-hidden="true" />
-                <span>Start chat</span>
-                <ChevronRight size={17} strokeWidth={2.4} aria-hidden="true" />
-              </button>
-              <button type="button" className="landing__section-action" onClick={() => navigate("/")}>
-                <Home size={17} strokeWidth={2.2} aria-hidden="true" />
-                <span>Home</span>
-              </button>
-            </div>
-          )}
         </div>
         {page === "tutors" ? (
-          <TutorFlickDeck selectedMode={selectedMode} onSelect={handleSelectMode} />
-        ) : page === "problem" ? (
-          <ProblemCostBreakdown />
-        ) : (
           <>
-            {page === "pack" && <StudyPackPreview />}
-            <div className={cardClassName}>
-              {content.cards.map((card) => (
-                <article key={card.title}>
-                  <strong>{card.title}</strong>
-                  <p>{card.body}</p>
-                </article>
-              ))}
-            </div>
+            <TutorFlickDeck selectedMode={selectedMode} onSelect={handleSelectMode} />
+            <section className="landing__tutor-pricing" aria-labelledby="tutor-pricing-title">
+              <div className="landing__tutor-pricing-head">
+                <h2 id="tutor-pricing-title">Pricing</h2>
+                <p>Plans are built around student habits and uptime.</p>
+                <p>Talk to your tutor on demand, or book regular sessions and get a reminder when it is time to study.</p>
+              </div>
+              <div className="landing__tutor-pricing-grid">
+                {tutorPricingPlans.map((plan) => (
+                  <article
+                    key={plan.name}
+                    className={`landing__tutor-price-card${plan.featured ? " is-featured" : ""}`}
+                  >
+                    <span>{plan.name}</span>
+                    <strong>{plan.price}</strong>
+                    <p>{plan.hours}</p>
+                    <small>{plan.summary}</small>
+                    <ul>
+                      {plan.includes.map((item) => (
+                        <li key={item}>{item}</li>
+                      ))}
+                    </ul>
+                  </article>
+                ))}
+              </div>
+            </section>
           </>
-        )}
+        ) : page !== "problem" ? (
+          <div className="landing__mode-grid">
+            {content.cards.map((card) => (
+              <article key={card.title}>
+                <strong>{card.title}</strong>
+                <p>{card.body}</p>
+              </article>
+            ))}
+          </div>
+        ) : null}
       </section>
     </main>
   );

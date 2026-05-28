@@ -781,7 +781,7 @@
 .study-pack-demo__copy {
   position: relative;
   z-index: 1;
-  width: min(32rem, calc(100% - 4rem));
+  width: min(28rem, calc(100% - 4rem));
   align-self: center;
   margin-left: clamp(1.25rem, 8vw, 7rem);
 }
@@ -807,7 +807,7 @@
 }
 
 .study-pack-demo__copy p {
-  max-width: 27rem;
+  max-width: 22rem;
   margin: 1.15rem 0 0;
   color: rgba(23, 18, 17, 0.58);
   font-size: 1rem;
@@ -818,7 +818,7 @@
   top: clamp(1rem, 4vw, 2.5rem);
   right: clamp(1rem, 4vw, 2.5rem);
   bottom: clamp(1rem, 4vw, 2.5rem);
-  width: min(28rem, calc(100% - 2rem));
+  width: min(30rem, calc(100% - 2rem));
 }
 
 .study-pack-demo .study-pack__header button {
@@ -1047,7 +1047,6 @@
 
 .study-pack-note h3,
 .study-pack-note h2,
-.study-pack-flashcard__meta b,
 .study-pack-quiz__card h3 {
   font-family: var(--font-display);
 }
@@ -1085,13 +1084,13 @@
 
 .study-pack__tabs {
   gap: 0.34rem;
-  padding: 0.5rem;
+  padding: 0.42rem 0.5rem;
 }
 
 .study-pack__tabs button {
-  min-height: 3.12rem;
-  gap: 0.26rem;
-  font-size: 0.62rem;
+  min-height: 2.74rem;
+  gap: 0.12rem;
+  font-size: 0.58rem;
   font-weight: 920;
 }
 
@@ -1101,13 +1100,13 @@
 
 .study-pack__tab-icon,
 .study-pack__tab-icon lord-icon {
-  width: 1.8rem;
-  height: 1.8rem;
+  width: 1.48rem;
+  height: 1.48rem;
 }
 
 .study-pack__section {
   gap: 0.64rem;
-  padding: 0.76rem;
+  padding: 0.84rem;
 }
 
 .study-pack-note {
@@ -1121,7 +1120,7 @@
 }
 
 .study-pack-note h2 {
-  font-size: clamp(1.45rem, 4.2vw, 2.15rem);
+  font-size: clamp(1.38rem, 3.8vw, 1.92rem);
   font-weight: 840;
 }
 
@@ -1136,7 +1135,7 @@
 }
 
 .study-pack-note h3 {
-  font-size: 0.64rem;
+  font-size: 0.7rem;
   font-weight: 880;
   font-family: var(--font-display);
   letter-spacing: 0;
@@ -1241,7 +1240,7 @@
 }
 
 .study-pack-flashcard {
-  min-height: 16.4rem;
+  min-height: 15.4rem;
 }
 
 .study-pack-flashcard__face {
@@ -1273,11 +1272,13 @@
 
 .study-pack-quiz__card {
   gap: 0.72rem;
-  padding: 0.82rem;
+  min-height: 12.8rem;
+  align-content: center;
+  padding: 1rem;
 }
 
 .study-pack-quiz__card h3 {
-  font-size: 0.66rem;
+  font-size: 0.72rem;
   font-weight: 880;
 }
 
@@ -1659,4 +1660,178 @@
   background: #171211;
   content: "";
   transform: translateX(-50%);
+}
+
+.study-pack--editorial .study-pack__tabs {
+  gap: 0.28rem;
+  padding: 0.38rem 0.46rem;
+}
+
+.study-pack--editorial .study-pack__tabs button {
+  min-height: 2.58rem;
+  border: 1px solid transparent;
+  border-radius: 0.58rem;
+  color: rgba(23, 18, 17, 0.54);
+  transform: none;
+}
+
+.study-pack--editorial .study-pack__tabs button:hover,
+.study-pack--editorial .study-pack__tabs button.is-active {
+  border-color: rgba(23, 18, 17, 0.08);
+  background: rgba(255, 255, 255, 0.72);
+  color: #171211;
+  box-shadow: none;
+  transform: none;
+}
+
+.study-pack--editorial .study-pack__tabs button.is-active::after {
+  display: none;
+  content: none;
+}
+
+.study-pack--editorial .study-pack__tabs button:hover .study-pack__tab-icon,
+.study-pack--editorial .study-pack__tabs button.is-active .study-pack__tab-icon {
+  transform: none;
+}
+
+.study-pack--editorial .study-pack__section {
+  padding: 0.74rem 0.9rem 0.9rem;
+}
+
+.study-pack--editorial .study-pack-note {
+  gap: 0.68rem;
+  padding: 0.28rem 0 0;
+}
+
+.study-pack--editorial .study-pack-note header {
+  gap: 0.46rem;
+  padding-bottom: 0.78rem;
+}
+
+.study-pack--editorial .study-pack-note h2 {
+  font-size: clamp(1.34rem, 3.2vw, 1.72rem);
+  line-height: 0.98;
+}
+
+.study-pack--editorial .study-pack-note header p {
+  border-left-color: rgba(23, 18, 17, 0.1);
+  padding-left: 0.62rem;
+  font-size: 0.82rem;
+  line-height: 1.38;
+}
+
+.study-pack--editorial .study-pack-note h3 {
+  font-family: var(--font-studio);
+  color: rgba(23, 18, 17, 0.54);
+  font-size: 0.58rem;
+  font-weight: 920;
+  text-transform: uppercase;
+}
+
+.study-pack--editorial .study-pack-note__block {
+  gap: 0.5rem;
+  padding-top: 0.62rem;
+}
+
+.study-pack--editorial .study-pack-note__lead,
+.study-pack--editorial .study-pack-note li,
+.study-pack--editorial .study-pack-note p {
+  font-size: 0.78rem;
+  line-height: 1.34;
+}
+
+.study-pack--editorial .study-pack-note__points {
+  gap: 0.46rem;
+}
+
+.study-pack--editorial .study-pack-note__points li {
+  gap: 0.54rem;
+}
+
+.study-pack--editorial .study-pack-note__points span {
+  min-width: 1.42rem;
+  min-height: 1.42rem;
+  background: rgba(255, 255, 255, 0.5);
+  font-size: 0.54rem;
+}
+
+.study-pack--editorial .study-pack-note__watchouts {
+  display: grid;
+  gap: 0.36rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.study-pack--editorial .study-pack-note__watchouts li {
+  border-left: 2px solid rgba(23, 18, 17, 0.11);
+  padding-left: 0.58rem;
+}
+
+.study-pack--editorial .study-pack-note__model {
+  border-radius: 0.48rem;
+  background: rgba(255, 255, 255, 0.54);
+  padding: 0.62rem 0.68rem;
+}
+
+.study-pack--editorial .study-pack__terms {
+  gap: 0.38rem;
+}
+
+.study-pack--editorial .study-pack__terms button {
+  min-height: 1.82rem;
+  border-color: rgba(23, 18, 17, 0.07);
+  background: rgba(255, 255, 255, 0.64);
+  color: rgba(23, 18, 17, 0.76);
+  font-size: 0.64rem;
+}
+
+.study-pack-flashcard__summary,
+.study-pack-quiz__score {
+  display: grid;
+  gap: 0.42rem;
+  border: 1px solid rgba(23, 18, 17, 0.08);
+  border-radius: 0.56rem;
+  background: rgba(255, 255, 255, 0.56);
+  padding: 0.62rem 0.68rem;
+}
+
+.study-pack-flashcard__summary {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.36rem;
+  padding: 0.5rem;
+}
+
+.study-pack-flashcard__summary span,
+.study-pack-quiz__score span {
+  color: rgba(23, 18, 17, 0.52);
+  font-family: var(--font-studio);
+  font-size: 0.58rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.study-pack-flashcard__summary span {
+  min-height: 1.7rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.62);
+  text-align: center;
+}
+
+.study-pack-quiz__score strong {
+  color: #171211;
+  font-family: var(--font-studio);
+  font-size: 1.4rem;
+  font-weight: 920;
+  line-height: 1;
+}
+
+.study-pack-quiz__score p {
+  margin: 0;
+  color: rgba(23, 18, 17, 0.68);
+  font-size: 0.78rem;
+  line-height: 1.32;
 }
