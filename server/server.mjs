@@ -76,6 +76,7 @@ If the transcript is too thin, still make a useful starter pack and set nextStep
 
 const app = express();
 const httpServer = createServer(app);
+const isVercel = process.env.VERCEL === "1";
 const openai = process.env.OPENAI_API_KEY
   ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
   : null;
@@ -299,7 +300,7 @@ app.post("/api/note", async (req, res) => {
   }
 });
 
-if (elevenlabs && ELEVENLABS_SPEECH_ENGINE_ID && openai) {
+if (!isVercel && elevenlabs && ELEVENLABS_SPEECH_ENGINE_ID && openai) {
   try {
     await elevenlabs.speechEngine.attach(
       ELEVENLABS_SPEECH_ENGINE_ID,
@@ -351,6 +352,10 @@ if (elevenlabs && ELEVENLABS_SPEECH_ENGINE_ID && openai) {
   }
 }
 
-httpServer.listen(PORT, () => {
-  console.log(`Teach Me server listening on http://127.0.0.1:${PORT}`);
-});
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  httpServer.listen(PORT, () => {
+    console.log(`Teach Me server listening on http://127.0.0.1:${PORT}`);
+  });
+}
+
+export default app;
