@@ -25,6 +25,7 @@ const PORT = Number(process.env.PORT ?? 3001);
 const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN ?? "http://127.0.0.1:5174";
 const OPENAI_MODEL = process.env.OPENAI_MODEL ?? "gpt-4.1-mini";
 const ELEVENLABS_SPEECH_ENGINE_ID = process.env.ELEVENLABS_SPEECH_ENGINE_ID;
+const ELEVENLABS_SPEECH_ENGINE_WS_URL = process.env.ELEVENLABS_SPEECH_ENGINE_WS_URL;
 const SPEECH_ENGINE_DEBUG = process.env.SPEECH_ENGINE_DEBUG === "true";
 const WAITLIST_PATH = process.env.WAITLIST_PATH
   ?? fileURLToPath(new URL("../data/waitlist.csv", import.meta.url));
@@ -77,6 +78,7 @@ If the transcript is too thin, still make a useful starter pack and set nextStep
 const app = express();
 const httpServer = createServer(app);
 const isVercel = process.env.VERCEL === "1";
+const voiceTransportConfigured = !isVercel || Boolean(ELEVENLABS_SPEECH_ENGINE_WS_URL);
 const openai = process.env.OPENAI_API_KEY
   ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
   : null;
@@ -113,13 +115,16 @@ app.use((req, res, next) => {
 });
 
 app.get("/api/health", (_req, res) => {
+  const speechEngineConfigured = Boolean(ELEVENLABS_SPEECH_ENGINE_ID) && voiceTransportConfigured;
+
   res.json({
     ok: true,
     elevenLabsConfigured: Boolean(elevenlabs),
-    speechEngineConfigured: Boolean(ELEVENLABS_SPEECH_ENGINE_ID),
+    speechEngineConfigured,
+    voiceTransportConfigured,
     openAiConfigured: Boolean(openai),
     llm: openai ? OPENAI_MODEL : "local fallback",
-    webSocketPath: "/ws",
+    webSocketPath: voiceTransportConfigured ? "/ws" : null,
     tokenPath: "/api/token",
     personality: currentPersonality,
   });
@@ -178,9 +183,11 @@ app.post("/api/waitlist", async (req, res) => {
 });
 
 app.get("/api/token", async (_req, res) => {
-  if (!elevenlabs || !ELEVENLABS_SPEECH_ENGINE_ID) {
+  if (!elevenlabs || !ELEVENLABS_SPEECH_ENGINE_ID || !voiceTransportConfigured) {
     res.status(503).json({
-      error: "ElevenLabs API key and Speech Engine ID are required for live voice.",
+      error: isVercel && !voiceTransportConfigured
+        ? "Live voice needs a separate WebSocket voice server outside Vercel."
+        : "ElevenLabs API key and Speech Engine ID are required for live voice.",
     });
     return;
   }

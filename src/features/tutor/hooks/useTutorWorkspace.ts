@@ -203,6 +203,8 @@ export function useTutorWorkspace() {
         setStatusMessage(
           nextHealth.elevenLabsConfigured && nextHealth.speechEngineConfigured && nextHealth.openAiConfigured
             ? "Teach Me ready"
+            : nextHealth.elevenLabsConfigured && nextHealth.openAiConfigured && !nextHealth.voiceTransportConfigured
+              ? "Text tutor ready. Live voice needs a voice server."
             : "Text tutor ready",
         );
       })
@@ -237,7 +239,11 @@ export function useTutorWorkspace() {
     }
 
     if (!health?.elevenLabsConfigured || !health.speechEngineConfigured || !health.openAiConfigured) {
-      setStatusMessage("Live voice needs ElevenLabs, OpenAI, and a Speech Engine ID.");
+      setStatusMessage(
+        !health?.voiceTransportConfigured
+          ? "Live voice needs a separate voice server outside Vercel."
+          : "Live voice needs ElevenLabs, OpenAI, and a Speech Engine ID.",
+      );
       return;
     }
 

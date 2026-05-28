@@ -54,6 +54,7 @@ export type HealthStatus = {
   ok: boolean;
   elevenLabsConfigured: boolean;
   speechEngineConfigured: boolean;
+  voiceTransportConfigured?: boolean;
   openAiConfigured: boolean;
   llm?: string;
   webSocketPath?: string;
