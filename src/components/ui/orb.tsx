@@ -21,6 +21,7 @@ type OrbProps = {
   getInputVolume?: () => number
   getOutputVolume?: () => number
   inverted?: boolean
+  motionSpeed?: number
   className?: string
 }
 
@@ -38,6 +39,7 @@ export function Orb({
   getInputVolume,
   getOutputVolume,
   inverted,
+  motionSpeed = 1,
   className,
 }: OrbProps) {
   return (
@@ -71,6 +73,7 @@ export function Orb({
           getInputVolume={getInputVolume}
           getOutputVolume={getOutputVolume}
           inverted={inverted}
+          motionSpeed={motionSpeed}
         />
       </Canvas>
     </div>
@@ -90,6 +93,7 @@ function Scene({
   getInputVolume,
   getOutputVolume,
   inverted,
+  motionSpeed,
 }: {
   colors: [string, string]
   colorsRef?: RefObject<[string, string]>
@@ -103,6 +107,7 @@ function Scene({
   getInputVolume?: () => number
   getOutputVolume?: () => number
   inverted?: boolean
+  motionSpeed: number
 }) {
   const { gl } = useThree()
   const circleRef =
@@ -111,6 +116,7 @@ function Scene({
   const targetColor1Ref = useRef(new THREE.Color(colors[0]))
   const targetColor2Ref = useRef(new THREE.Color(colors[1]))
   const animSpeedRef = useRef(0.1)
+  const motionSpeedRef = useRef(1)
   const perlinNoiseTexture = useMemo(() => createNoiseTexture(seed), [seed])
 
   const agentRef = useRef<AgentState>(agentState)
@@ -127,6 +133,11 @@ function Scene({
   useEffect(() => {
     modeRef.current = volumeMode
   }, [volumeMode])
+
+  useEffect(() => {
+    motionSpeedRef.current =
+      Number.isFinite(motionSpeed) ? Math.max(0, motionSpeed) : 1
+  }, [motionSpeed])
 
   useEffect(() => {
     manualInRef.current = clamp01(
@@ -182,7 +193,8 @@ function Scene({
       if (live[1]) targetColor2Ref.current.set(live[1])
     }
     const u = mat.uniforms
-    u.uTime.value += delta * 0.68
+    const motionSpeed = motionSpeedRef.current
+    u.uTime.value += delta * 0.68 * motionSpeed
 
     if (u.uOpacity.value < 1) {
       u.uOpacity.value = Math.min(1, u.uOpacity.value + delta * 2)
@@ -252,7 +264,8 @@ function Scene({
     curInRef.current += (targetIn - curInRef.current) * 0.2
     curOutRef.current += (targetOut - curOutRef.current) * 0.2
 
-    const targetSpeed = 0.14 + (1 - Math.pow(curOutRef.current - 1, 2)) * 1.15
+    const targetSpeed =
+      (0.14 + (1 - Math.pow(curOutRef.current - 1, 2)) * 1.15) * motionSpeed
     animSpeedRef.current += (targetSpeed - animSpeedRef.current) * 0.12
 
     u.uAnimation.value += delta * animSpeedRef.current
