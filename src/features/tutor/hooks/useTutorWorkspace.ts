@@ -227,9 +227,17 @@ export function useTutorWorkspace() {
     try {
       setStatusMessage("Connecting voice...");
       await navigator.mediaDevices.getUserMedia({ audio: true });
-      const { token } = await getVoiceToken(agentSettings.personality);
+      const { token, voiceId } = await getVoiceToken(agentSettings.personality);
+      const selectedVoiceId = voiceId ?? getPersonalityVoiceId(agentSettings.personality);
       await conversation.startSession({
         conversationToken: token,
+        overrides: selectedVoiceId
+          ? {
+              tts: {
+                voiceId: selectedVoiceId,
+              },
+            }
+          : undefined,
       });
     } catch (error) {
       setStatusMessage(error instanceof Error ? error.message : "Voice start failed");
