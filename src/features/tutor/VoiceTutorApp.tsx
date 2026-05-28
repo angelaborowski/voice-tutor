@@ -1,5 +1,5 @@
 import { ConversationProvider } from "@elevenlabs/react";
-import { Mic, XIcon } from "lucide-react";
+import { AudioLines, Mic, XIcon } from "lucide-react";
 import { useEffect, useMemo, useState, type CSSProperties } from "react";
 
 import { GlassEffect } from "@/components/ui/glass-effect";
@@ -93,9 +93,28 @@ function TutorWorkspace() {
   const [isComposerFocused, setIsComposerFocused] = useState(false);
   const [promptSuggestionIndex, setPromptSuggestionIndex] = useState(0);
   const [promptRevealCycle, setPromptRevealCycle] = useState(0);
+  const [liveInputVolume, setLiveInputVolume] = useState(0);
   const activePromptSuggestion =
     composerPromptSuggestions[promptSuggestionIndex] ?? composerPromptSuggestions[0];
   const shouldAnimateComposerPrompt = shouldShowComposerPrompt && !isComposerFocused;
+  const liveVoiceState =
+    conversation.status === "connecting"
+      ? "connecting"
+      : conversation.status === "connected"
+        ? conversation.mode === "speaking"
+          ? "speaking"
+          : liveInputVolume > 0.045
+            ? "hearing"
+            : "listening"
+        : "idle";
+  const liveVoiceCopy =
+    liveVoiceState === "connecting"
+      ? { label: "Connecting", hint: "Setting up mic" }
+      : liveVoiceState === "speaking"
+        ? { label: "Tutor speaking", hint: "Listen in" }
+        : liveVoiceState === "hearing"
+          ? { label: "You're talking", hint: "Mic is picking you up" }
+          : { label: "Agent listening", hint: "Your turn" };
   const staggerPromptCharacters = useMemo(
     () =>
       [...activePromptSuggestion].map((char, index) => ({
@@ -112,6 +131,19 @@ function TutorWorkspace() {
       (now.getDate() + now.getHours() + now.getMinutes()) % composerPromptSuggestions.length,
     );
   }, []);
+
+  useEffect(() => {
+    if (!isVoiceActive) {
+      setLiveInputVolume(0);
+      return;
+    }
+
+    const intervalId = window.setInterval(() => {
+      setLiveInputVolume(conversation.getInputVolume());
+    }, 120);
+
+    return () => window.clearInterval(intervalId);
+  }, [conversation, isVoiceActive]);
 
   useEffect(() => {
     if (!shouldAnimateComposerPrompt) {
@@ -253,6 +285,27 @@ function TutorWorkspace() {
               />
             </div>
             <div className="chat__composer-toolbar">
+              {isVoiceActive && (
+                <div
+                  className="chat__voice-state"
+                  data-voice-state={liveVoiceState}
+                  role="status"
+                  aria-live="polite"
+                >
+                  <span className="chat__voice-state-icon" aria-hidden="true">
+                    <AudioLines size={15} />
+                  </span>
+                  <span className="chat__voice-state-copy">
+                    <strong>{liveVoiceCopy.label}</strong>
+                    <span>{liveVoiceCopy.hint}</span>
+                  </span>
+                  <span
+                    className="chat__voice-state-meter"
+                    style={{ "--voice-level": Math.max(0.18, Math.min(liveInputVolume * 9, 1)) } as CSSProperties}
+                    aria-hidden="true"
+                  />
+                </div>
+              )}
               <div className="chat__composer-actions">
                 <TutorPicker
                   value={agentSettings.personality}
