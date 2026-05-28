@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { fetchHealth, generateStudyNote, getVoiceToken, sendTutorMessage, syncTutorPersonality } from "@/features/tutor/api/client";
-import { AGENT_SETTINGS_STORAGE_KEY, STUDIO_BACKDROP_STORAGE_KEY, getPersonalityVoiceId, hasLearnerTurn, isMeaningfulSpeechText, personalityLabels, readAgentSettings, readStoredSessions, readStudioBackdrop, type AgentSettings, type StudioTheme, type StudyPackTab, type StudioBackdrop } from "@/features/tutor/domain/settings";
+import { AGENT_SETTINGS_STORAGE_KEY, STUDIO_BACKDROP_STORAGE_KEY, hasLearnerTurn, isMeaningfulSpeechText, personalityLabels, readAgentSettings, readStoredSessions, readStudioBackdrop, type AgentSettings, type StudioTheme, type StudyPackTab, type StudioBackdrop } from "@/features/tutor/domain/settings";
 import { STORAGE_KEY, createId, createStarterSession, getTimeLabel, previewFromMessages, titleFromMessages } from "@/features/tutor/domain/tutorContent";
 import type { HealthStatus, RevisionSession, StudyNote, TutorMessage } from "@/features/tutor/domain/types";
 import type { AgentState } from "@/components/ui/orb";
@@ -136,12 +136,7 @@ export function useTutorWorkspace() {
       setStatusMessage(typeof error === "string" ? error : "Voice session error");
     },
     onConnect: () => {
-      const voiceId = getPersonalityVoiceId(agentSettings.personality);
-      setStatusMessage(
-        voiceId
-          ? `${personalityLabels[agentSettings.personality]} voice live`
-          : "Voice live",
-      );
+      setStatusMessage(`${personalityLabels[agentSettings.personality]} tutor live`);
     },
     onDisconnect: () => {
       setStatusMessage("Voice stopped");
@@ -227,17 +222,9 @@ export function useTutorWorkspace() {
     try {
       setStatusMessage("Connecting voice...");
       await navigator.mediaDevices.getUserMedia({ audio: true });
-      const { token, voiceId } = await getVoiceToken(agentSettings.personality);
-      const selectedVoiceId = voiceId ?? getPersonalityVoiceId(agentSettings.personality);
+      const { token } = await getVoiceToken(agentSettings.personality);
       await conversation.startSession({
         conversationToken: token,
-        overrides: selectedVoiceId
-          ? {
-              tts: {
-                voiceId: selectedVoiceId,
-              },
-            }
-          : undefined,
       });
     } catch (error) {
       setStatusMessage(error instanceof Error ? error.message : "Voice start failed");
