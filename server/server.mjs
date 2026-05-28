@@ -339,7 +339,7 @@ if (!isVercel && elevenlabs && ELEVENLABS_SPEECH_ENGINE_ID && openai) {
           const response = await openai.responses.create(
             {
               model: OPENAI_MODEL,
-              instructions: tutorInstructions(currentPersonality),
+              instructions: tutorInstructions(currentPersonality, { channel: "voice" }),
               input: transcript
                 .filter((message) => isMeaningfulSpeechText(message.content))
                 .map((message) => ({

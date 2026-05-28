@@ -139,6 +139,17 @@ test("prompt instructions preserve core tutoring constraints", () => {
   assert.match(prompt, /blank lines/i);
 });
 
+test("voice prompt uses spoken maths instead of latex-heavy formulas", () => {
+  const prompt = tutorInstructions("apollo", { channel: "voice" });
+
+  assert.match(prompt, /live spoken voice turn/i);
+  assert.match(prompt, /say expressions in pronounceable words/i);
+  assert.match(prompt, /Never send \\frac, \\sqrt, \\pm/i);
+  assert.match(prompt, /x squared plus five x plus six/i);
+  assert.doesNotMatch(prompt, /write expressions and equations as short LaTeX/i);
+  assert.doesNotMatch(prompt, /\$x\^2 \+ 5x \+ 6\$/);
+});
+
 test("local maths fallback uses dollar-delimited latex", () => {
   const reply = localTutorReply("test me on quadratic equations", "apollo");
 

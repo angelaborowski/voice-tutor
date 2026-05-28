@@ -50,9 +50,20 @@ const SUBJECT_AND_FORMAT_RULES = [
   "When the topic is Chemistry rates of reaction, use appropriate chemistry language naturally: kinetic energy, collision frequency, successful collisions, activation energy, rate of reaction.",
   "For Chemistry temperature and rate: increasing temperature does not lower activation energy. It increases kinetic energy, so particles collide more often and a greater proportion of collisions have at least the activation energy.",
   "When the topic is not Chemistry, use the relevant vocabulary for that subject instead of forcing Chemistry examples.",
+];
+
+const TEXT_FORMAT_RULES = [
   "Use plain spoken text for voice turns. Avoid markdown, bullet lists, headings, blank lines, and long multi-line replies.",
   "For maths, physics, chemistry, and any formula-heavy subject, write expressions and equations as short LaTeX inside dollar delimiters, even inside examples, like $x^2 + 5x + 6$, $F = ma$, or $$x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}$$.",
   "Do not use \\( \\), \\[ \\], plain parentheses, or square brackets as math delimiters.",
+];
+
+const VOICE_FORMAT_RULES = [
+  "This is a live spoken voice turn. Write exactly what should be spoken aloud.",
+  "Do not use markdown, bullet lists, headings, blank lines, dollar delimiters, display equations, or LaTeX commands in voice turns.",
+  "For maths, say expressions in pronounceable words. Prefer 'x squared plus five x plus six over x squared plus two x' or 'the numerator is x squared plus five x plus six, and the denominator is x squared plus two x' instead of symbolic fractions.",
+  "Never send \\frac, \\sqrt, \\pm, superscript markup, or long symbolic equations to speech. If a formula is needed, describe it verbally first and keep it short.",
+  "For fractions, factorising, powers, roots, chemistry equations, or physics formulas, give one spoken step and ask the learner for the next step.",
 ];
 
 const EXAMPLE_RULES = [
@@ -67,14 +78,30 @@ const CORE_INSTRUCTION_LAYERS = [
   ["Conversation behavior", CONVERSATION_BEHAVIOR_RULES],
   ["Learner needs", LEARNER_NEED_RULES],
   ["Subjects and formatting", SUBJECT_AND_FORMAT_RULES],
-  ["Examples", EXAMPLE_RULES],
 ];
 
-export function tutorInstructions(personality = "athena") {
+export function tutorInstructions(personality = "athena", options = {}) {
+  const channel = options?.channel === "voice" ? "voice" : "text";
+  const formatRules = channel === "voice" ? VOICE_FORMAT_RULES : TEXT_FORMAT_RULES;
+
   return [
     ...CORE_INSTRUCTION_LAYERS.map(([title, rules]) => formatInstructionLayer(title, rules)),
+    formatInstructionLayer(channel === "voice" ? "Voice formatting" : "Text formatting", formatRules),
+    formatInstructionLayer("Examples", exampleRulesForChannel(channel)),
     personalityInstructions(personality),
   ].join("\n\n");
+}
+
+function exampleRulesForChannel(channel) {
+  if (channel !== "voice") {
+    return EXAMPLE_RULES;
+  }
+
+  return [
+    "Example: 'test me on quadratic equations' -> ask: In x squared plus five x plus six, what two numbers multiply to six and add to five?",
+    "Example: 'help me understand product strategy' -> explain user, problem, bet, trade-off, metric, then ask who the user is.",
+    "Example: 'I don't get photosynthesis at A-level' -> explain raw materials and products, then ask for the raw materials.",
+  ];
 }
 
 function personalityInstructions(personality) {
