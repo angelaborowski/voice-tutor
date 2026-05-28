@@ -363,6 +363,7 @@ export function LandingPage() {
               inverted
               manualInput={0.25}
               manualOutput={0.58}
+              motionSpeed={0.58}
               seed={404}
               volumeMode="manual"
               className="landing__orb-canvas"
@@ -389,6 +390,7 @@ export function LandingPage() {
               colors={landingTutorColors}
               manualInput={0.6}
               manualOutput={0.78}
+              motionSpeed={0.72}
               seed={1107}
               volumeMode="manual"
               className="landing__orb-canvas"
